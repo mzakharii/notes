@@ -15,6 +15,8 @@
 --f:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 @media(prefers-color-scheme:dark){:root{--bg:#0E1626;--card:#17233A;--ink:#EAF0F8;--mute:#9AA9C0;--line:#2A3A57}}
 *{box-sizing:border-box}
+:root{--cs:#DCEBFF;--cp:#DAF1E3;--co:#E7E2F7;--cd:#FADCE6;--ds:#3B82F6;--dp:#2A9D8F;--do:#8B7CD6;--dd:#E0568A}
+@media(prefers-color-scheme:dark){:root{--cs:#1F3556;--cp:#1B4030;--co:#35305A;--cd:#4D2434}}
 html{height:100%}
 body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.45 var(--f);padding:env(safe-area-inset-top,0) 0 0}
 main{max-width:560px;margin:0 auto;padding:16px 16px 110px}
@@ -33,7 +35,12 @@ h2{font-size:18px;margin:0 0 10px;font-weight:600}
 .tm{font-weight:800;font-variant-numeric:tabular-nums}
 .tm small{font-weight:400;font-size:12px}
 .ev.done .ti,.ev.done .lnk{text-decoration:line-through;color:var(--mute)}
-.ev.next{box-shadow:inset 3px 0 0 var(--acc);padding-left:10px}
+.ev.c{grid-template-columns:64px 1fr;border-top:0;border-radius:12px;padding:8px 10px;margin-bottom:6px}
+.c-study{background:var(--cs)}.c-personal{background:var(--cp)}.c-other{background:var(--co)}.c-date{background:var(--cd)}
+.live{display:inline-block;font-size:12px;font-weight:600;color:#fff;background:var(--acc);border-radius:99px;padding:1px 8px;margin-left:8px;vertical-align:middle}
+.leg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;font-size:13px}.leg span{padding:3px 10px;border-radius:99px}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:528px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:12px;padding:4px 4px 4px 16px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+#toast button{background:none;color:var(--bg);text-decoration:underline}
 input,select,button{font:inherit;color:var(--ink)}
 input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-height:44px}
 label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
@@ -63,8 +70,8 @@ input[type=checkbox].ck{width:26px;height:26px;min-height:0;accent-color:var(--o
 .grid b{font-size:12px;color:var(--mute);text-align:center;font-weight:600}
 .cell{min-height:52px;padding:4px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
 .cell.sel{background:var(--ink);color:var(--bg)}.cell.tod{border:2px solid var(--acc)}.cell.mute{opacity:.35}
-.dots{display:flex;gap:3px;height:8px}.dots i{width:6px;height:6px;border-radius:50%;background:var(--mute)}
-.dots .d1{background:var(--acc)}.dots .d2{background:var(--ok)}
+.dots{display:flex;gap:2px;height:7px}.dots i{width:5px;height:5px;border-radius:50%}
+.dots .ds{background:var(--ds)}.dots .dp{background:var(--dp)}.dots .do{background:var(--do)}.dots .dd{background:var(--dd)}.dots .dt{background:var(--acc)}
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:18px;width:min(92vw,360px);font:inherit}
 dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p{margin:0 0 10px}
 #msg,#smsg{font-size:14px;color:var(--mute);margin-top:8px}
@@ -84,7 +91,7 @@ dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p
     <strong>Back up your data</strong><small id="nudgeT"></small>
     <p style="margin:10px 0 0"><button id="nudgeBtn">Back up now</button></p>
   </section>
-  <section class="card"><h2>Today</h2><div id="todayList"></div></section>
+  <section class="card"><h2>Coming up</h2><div id="todayList"></div></section>
   <section class="card"><h2>Tasks</h2><div id="taskList"></div></section>
   <div class="bar"><button class="sec" data-go="calendar">Calendar</button><button data-go="add">Add</button></div>
 </div>
@@ -102,6 +109,8 @@ dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p
     <input id="title" autocomplete="off">
 
     <div id="evBox">
+      <label>Category</label>
+      <div class="seg" id="cats"><label><input type="radio" name="cat" value="study"><span>Study</span></label><label><input type="radio" name="cat" value="personal"><span>Personal</span></label><label><input type="radio" name="cat" value="other"><span>Others</span></label></div>
       <div class="row" style="margin-top:10px">
         <div><label for="type">Repeats</label><select id="type"><option value="once">Does not repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option></select></div>
         <div id="dateBox"><label for="date">Date</label><input id="date" type="date"></div>
@@ -147,6 +156,7 @@ dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p
   <div class="top"><button class="sec" data-go="">Back</button>
     <div class="seg" style="width:190px"><label><input type="radio" name="cv" value="week" checked><span>Week</span></label><label><input type="radio" name="cv" value="month"><span>Month</span></label></div></div>
   <div class="top" style="margin:14px 0"><button class="sec" id="prev" aria-label="Previous">Prev</button><h2 id="calT" style="margin:0;text-align:center"></h2><button class="sec" id="next" aria-label="Next">Next</button></div>
+  <div class="leg"><span style="background:var(--cs)">Study</span><span style="background:var(--cp)">Personal</span><span style="background:var(--co)">Others</span><span style="background:var(--cd)">Birthdays</span></div>
   <div id="calBody"></div>
 </div>
 
@@ -174,6 +184,8 @@ dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p
 
 </main>
 
+<div id="toast" class="hide" role="status"><span>Task completed</span><button id="undo">Undo</button></div>
+
 <dialog id="scope">
   <p><strong>This event repeats.</strong> <span id="sVerb"></span></p>
   <p><button id="sOne"></button></p>
@@ -189,8 +201,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const ymd=d=>d.toLocaleDateString('en-CA');
 const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const PRI={1:'High',2:'Medium',3:'Low'};
+const CAT={study:'Study',personal:'Personal',other:'Others'};
 const WX={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-let events=load('db_ev',[]), tasks=load('db_tasks',[]), dates=load('db_dates',[]);
+let events=load('db_ev',[]), tasks=load('db_tasks',[]).filter(t=>!t.done), dates=load('db_dates',[]);
 let cfg=Object.assign({city:'',lat:null,lon:null,brief:'07:30',lastBackup:null},load('db_cfg',{}));
 let fired=load('db_fired',{}), firedT=load('db_firedT',{}), firedD=load('db_firedD',{}), wx=load('db_wx',null);
 let swReg=null, editing=null, calView='week', calRef=new Date(), calSel=ymd(new Date());
@@ -212,9 +225,17 @@ function fmtDue(t){
   const diff=Math.round((d-n)/864e5);
   return (diff===0?'today':diff===1?'tomorrow':dLabel(t.due))+(t.time?' at '+t.time:'');
 }
+function rainText(h){
+  if(!h||!h.length)return'';
+  const f=n=>String(n%24).padStart(2,'0')+':00',r=[];let a=h[0],b=h[0];
+  for(const x of h.slice(1)){if(x===b+1){b=x;continue}r.push([a,b]);a=b=x}
+  r.push([a,b]);
+  return r.map(([x,y])=>f(x)+' to '+f(y+1)).join(', ');
+}
 function wxSummary(){
-  if(!wx)return '';
-  return `${WX[wx.code]||'Weather'}, ${wx.min}° to ${wx.max}°C, ${wx.rain}% chance of rain`+(wx.rain>=50?'. Take an umbrella.':'.');
+  if(!wx||wx.date!==ymd(new Date())||!wx.rainH)return '';
+  const rt=rainText(wx.rainH);
+  return `Now ${Math.round(wx.now)}°C, high ${wx.max}°C today. `+(rt?`Rain expected ${rt}.`:'No rain expected.');
 }
 function dayItems(d){
   const k=ymd(d),out=[];
@@ -232,32 +253,30 @@ function taskRow(t){
     <input class="ck" type="checkbox" aria-label="Done: ${esc(t.title)}" ${t.done?'checked':''} data-tdone="${t.id}">
     <span><button class="lnk" data-edit="t:${t.id}">${esc(t.title)}</button><small><span class="pri p${t.pri}">${PRI[t.pri]}</span><span class="${late?'late':''}">${late?'Overdue, ':'Due '}${fmtDue(t)}</span>${t.note?', '+esc(t.note):''}</small></span></div>`;
 }
-function itemRow(it,main,nextId){
+function itemRow(it,hm){
   const o=it.o,k=it.date;
   if(it.k==='t')return taskRow(o);
   if(it.k==='d'){const a=ageTxt(o,k);
-    return `<div class="ev"><span class="tm"><small>All day</small></span><span><button class="lnk" data-edit="d:${o.id}">${esc(o.title)}</button><small>${o.label}${a?', '+a:''}${o.note?', '+esc(o.note):''}</small></span><span></span></div>`}
-  const dn=(o.done||{})[k];
-  return `<div class="ev ${dn?'done':''} ${o.id===nextId?'next':''}">
-    <span class="tm">${o.time}${o.end?`<small>to ${o.end}</small>`:''}</span>
-    <span><button class="lnk" data-edit="e:${o.id}" data-date="${k}">${esc(o.title)}</button>${o.note?`<small>${esc(o.note)}</small>`:''}</span>
-    ${main?`<input class="ck" type="checkbox" aria-label="Done: ${esc(o.title)}" ${dn?'checked':''} data-done="${o.id}">`:'<span></span>'}</div>`;
+    return `<div class="ev c c-date"><span class="tm"><small>All day</small></span><span><button class="lnk" data-edit="d:${o.id}">${esc(o.title)}</button><small>${o.label}${a?', '+a:''}${o.note?', '+esc(o.note):''}</small></span></div>`}
+  const cat=o.cat||'other',live=hm&&o.end&&o.time<=hm&&o.end>hm;
+  return `<div class="ev c c-${cat}"><span class="tm">${o.time}${o.end?`<small>to ${o.end}</small>`:''}</span>
+    <span><button class="lnk" data-edit="e:${o.id}" data-date="${k}">${esc(o.title)}${live?'<span class="live">in progress</span>':''}</button><small>${CAT[cat]||'Others'}${o.note?', '+esc(o.note):''}</small></span></div>`;
 }
 
 /* ---------- render ---------- */
 function renderMain(){
-  const now=new Date(),h=now.getHours(),k=ymd(now),hm=now.toTimeString().slice(0,5);
+  const now=new Date(),h=now.getHours(),hm=now.toTimeString().slice(0,5);
   $('#greet').textContent=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
   $('#today').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
   if(wx){$('#wxT').textContent=Math.round(wx.now)+'°';$('#wxD').textContent=WX[wx.code]||'Weather';
-    $('#wxS').textContent=`High ${wx.max}°, low ${wx.min}°, rain ${wx.rain}%`+(cfg.city?' in '+cfg.city:'')}
+    const rt=rainText(wx.rainH);
+    $('#wxS').textContent=`High ${wx.max}°, low ${wx.min}°`+(wx.rainH?(rt?`, rain ${rt}`:', no rain'):'')+(cfg.city?' in '+cfg.city:'')}
   const its=dayItems(now).filter(i=>i.k!=='t');
-  const nx=its.find(i=>i.k==='e'&&i.t>=hm&&!(i.o.done||{})[k]);
-  $('#todayList').innerHTML=its.length?its.map(i=>itemRow(i,true,nx&&nx.o.id)).join(''):'<p class="empty">Nothing planned today.</p>';
+  const list=[...its.filter(i=>i.k==='d'),...its.filter(i=>i.k==='e'&&(i.o.end?i.o.end>hm:i.t>hm)).slice(0,3)];
+  $('#todayList').innerHTML=list.length?list.map(i=>itemRow(i,hm)).join(''):'<p class="empty">Nothing more planned today.</p>';
   const key=t=>t.due+(t.time||'99');
-  const open=tasks.filter(t=>!t.done).sort((a,b)=>key(a)<key(b)?-1:key(a)>key(b)?1:a.pri-b.pri),done=tasks.filter(t=>t.done);
-  $('#taskList').innerHTML=(open.length?open.map(taskRow).join(''):'<p class="empty">No open tasks.</p>')
-    +(done.length?`<details style="margin-top:10px"><summary class="empty">Completed (${done.length})</summary>${done.map(taskRow).join('')}<button class="x" data-tclear="1">Clear completed</button></details>`:'');
+  const open=tasks.filter(t=>!t.done).sort((a,b)=>key(a)<key(b)?-1:key(a)>key(b)?1:a.pri-b.pri);
+  $('#taskList').innerHTML=open.length?open.map(taskRow).join(''):'<p class="empty">No open tasks.</p>';
   const total=events.length+tasks.length+dates.length;
   const days=cfg.lastBackup?Math.floor((Date.now()-new Date(cfg.lastBackup))/864e5):null;
   $('#nudge').classList.toggle('hide',!(total>0&&(days===null||days>=14)));
@@ -280,7 +299,7 @@ function renderCal(){
     if(calSel.slice(0,7)!==ymd(M).slice(0,7))calSel=ymd(M);
     let g=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<b>${d}</b>`).join('')+'<span></span>'.repeat(lead);
     for(let i=1;i<=n;i++){const d=new Date(M.getFullYear(),M.getMonth(),i),k=ymd(d),its=dayItems(d);
-      const dots=['e','t','d'].filter(c=>its.some(x=>x.k===c)).map(c=>`<i class="${c==='t'?'d1':c==='d'?'d2':''}"></i>`).join('');
+      const dots=[...new Set(its.map(x=>x.k==='e'?'d'+(x.o.cat||'other')[0]:x.k==='t'?'dt':'dd'))].map(c=>`<i class="${c}"></i>`).join('');
       g+=`<button class="cell ${k===calSel?'sel':''} ${k===today?'tod':''}" data-day="${k}" aria-label="${dLabel(k)}">${i}<span class="dots">${dots}</span></button>`}
     const its=dayItems(new Date(calSel+'T00:00'));
     body.innerHTML=`<div class="grid">${g}</div><section class="card"><h2>${dLabel(calSel)}</h2>${its.length?its.map(x=>itemRow(x,false)).join(''):'<p class="empty">Nothing planned.</p>'}</section>`;
@@ -319,7 +338,7 @@ function resetForm(){
   editing=null;const tm=new Date();tm.setDate(tm.getDate()+1);
   $('#formH').textContent='Add new';$('#kind').classList.remove('hide');$('#del').classList.add('hide');$('#msg').textContent='';
   $('#title').value='';$('#note').value='';$('#type').value='once';$('#date').value=ymd(new Date());
-  $('#time').value='08:00';$('#end').value='';$('#lead').value='15';$$('#days input').forEach(i=>i.checked=false);
+  $('#time').value='08:00';$('#end').value='';$('#lead').value='15';$$('#days input').forEach(i=>i.checked=false);$$('input[name=cat]').forEach(i=>{i.checked=false});
   $('#tdue').value=ymd(tm);$('#ttime').value='';$('#pri').value='2';$('#tlead').value='60';
   $('#dlabel').value='Birthday';$('#ddate').value=ymd(new Date());$('#dAge').checked=true;$('#dlead').value='0';
   typeCh();setKind('event');
@@ -337,6 +356,7 @@ function fillForm(){
     $('#type').value=o.type;typeCh();$('#date').value=o.date||ymd(new Date());
     $$('#days input').forEach(i=>{i.checked=(o.days||[]).includes(+i.value)});
     $('#time').value=e.time;$('#end').value=e.end||'';$('#lead').value=String(e.lead||0);
+    const cr=$(`input[name=cat][value=${e.cat||'other'}]`);if(cr)cr.checked=true;
   }else if(kind==='task'){
     $('#tdue').value=o.due;$('#ttime').value=o.time||'';$('#pri').value=String(o.pri);$('#tlead').value=String(o.lead);
   }else{
@@ -371,17 +391,18 @@ $('#save').onclick=()=>{
     if(editing)Object.assign(dates.find(y=>y.id===editing.id),x);else dates.push({id:Date.now().toString(36),...x});
     return finish();
   }
+  const catEl=$('input[name=cat]:checked');if(!catEl){msg('Choose a category: Study, Personal or Others.');return}
   const time=$('#time').value,end=$('#end').value,type=$('#type').value;
   if(!time){msg('Pick a start time.');return}
   if(end&&end<=time){msg('The end time must be after the start time.');return}
-  const n={title,time,end,type,lead:+$('#lead').value,note};
+  const n={title,time,end,type,lead:+$('#lead').value,note,cat:catEl.value};
   if(type==='once'){n.date=$('#date').value;if(!n.date){msg('Pick a date.');return}}
   if(type==='weekly'){n.days=$$('#days input:checked').map(i=>+i.value);if(!n.days.length){msg('Pick at least one day.');return}}
   if(!editing){events.push({id:Date.now().toString(36),done:{},...n});return finish()}
   const o=events.find(x=>x.id===editing.id);
   const apply=scope=>{
-    if(scope==='one'){o.over=o.over||{};o.over[editing.date]={title:n.title,time:n.time,end:n.end,note:n.note,lead:n.lead}}
-    else{Object.assign(o,{title,time,end,type,lead:n.lead,note});
+    if(scope==='one'){o.over=o.over||{};o.over[editing.date]={title:n.title,time:n.time,end:n.end,note:n.note,lead:n.lead,cat:n.cat}}
+    else{Object.assign(o,{title,time,end,type,lead:n.lead,note,cat:n.cat});
       if(type==='once')o.date=n.date;else delete o.date;
       if(type==='weekly')o.days=n.days;else delete o.days}
     finish();
@@ -409,12 +430,21 @@ document.addEventListener('click',ev=>{
 });
 document.addEventListener('change',ev=>{
   const d=ev.target.dataset||{};
-  if(d.done){const e=events.find(x=>x.id===d.done),k=ymd(new Date());e.done=e.done||{};if(ev.target.checked)e.done[k]=1;else delete e.done[k];saveAll();render()}
-  else if(d.tdone){tasks.find(x=>x.id===d.tdone).done=ev.target.checked;saveAll();render()}
+  if(d.tdone)completeTask(d.tdone);
 });
 $$('input[name=cv]').forEach(r=>r.onchange=()=>{calView=r.value;if(calView==='month')calSel=ymd(calRef);renderCal()});
 const step=n=>{if(calView==='week')calRef.setDate(calRef.getDate()+7*n);else{calRef.setDate(1);calRef.setMonth(calRef.getMonth()+n)}renderCal()};
 $('#prev').onclick=()=>step(-1);$('#next').onclick=()=>step(1);
+
+/* ---------- completing tasks ---------- */
+let lastTask=null,toastTimer;
+function completeTask(id){
+  const i=tasks.findIndex(x=>x.id===id);if(i<0)return;
+  lastTask=tasks.splice(i,1)[0];saveAll();render();
+  $('#toast').classList.remove('hide');clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>$('#toast').classList.add('hide'),6000);
+}
+$('#undo').onclick=()=>{if(lastTask){tasks.push(lastTask);lastTask=null;saveAll();render()}$('#toast').classList.add('hide')};
 
 /* ---------- backup ---------- */
 const backupObj=()=>({app:'daybook',version:3,exported:new Date().toISOString(),events,tasks,dates,settings:{city:cfg.city,lat:cfg.lat,lon:cfg.lon,brief:cfg.brief}});
@@ -433,7 +463,7 @@ $('#imp').onchange=async ev=>{
   try{
     const j=JSON.parse(await f.text());if(j.app!=='daybook')throw 0;
     const merge=(a,b)=>{const m=new Map(a.map(x=>[x.id,x]));(b||[]).forEach(x=>{if(x&&x.id)m.set(x.id,x)});return[...m.values()]};
-    events=merge(events,j.events);tasks=merge(tasks,j.tasks);dates=merge(dates,j.dates);
+    events=merge(events,j.events);tasks=merge(tasks,(j.tasks||[]).filter(t=>!t.done));dates=merge(dates,j.dates);
     if(j.settings&&cfg.lat==null&&!cfg.city)Object.assign(cfg,j.settings);
     saveAll();render();fetchWeather();
     $('#smsg').textContent=`Restored: ${(j.events||[]).length} events, ${(j.tasks||[]).length} tasks, ${(j.dates||[]).length} yearly dates.`;
@@ -445,9 +475,10 @@ $('#imp').onchange=async ev=>{
 async function fetchWeather(){
   if(cfg.lat==null)return;
   try{
-    const u=`https://api.open-meteo.com/v1/forecast?latitude=${cfg.lat}&longitude=${cfg.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=1`;
-    const j=await (await fetch(u)).json();
-    wx={now:j.current.temperature_2m,code:j.current.weather_code,max:Math.round(j.daily.temperature_2m_max[0]),min:Math.round(j.daily.temperature_2m_min[0]),rain:j.daily.precipitation_probability_max[0]||0};
+    const u=`https://api.open-meteo.com/v1/forecast?latitude=${cfg.lat}&longitude=${cfg.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability,precipitation&timezone=auto&forecast_days=1`;
+    const j=await (await fetch(u)).json(),rainH=[];
+    j.hourly.time.forEach((t,i)=>{if((j.hourly.precipitation_probability[i]||0)>=50||(j.hourly.precipitation[i]||0)>=0.3)rainH.push(+t.slice(11,13))});
+    wx={date:ymd(new Date()),now:j.current.temperature_2m,code:j.current.weather_code,max:Math.round(j.daily.temperature_2m_max[0]),min:Math.round(j.daily.temperature_2m_min[0]),rain:j.daily.precipitation_probability_max[0]||0,rainH};
     save('db_wx',wx);render();
   }catch{$('#wxS').textContent='Could not load weather. Check your connection.'}
 }
@@ -469,6 +500,11 @@ $('#notif').onclick=async()=>{if(!('Notification' in window))return;await Notifi
 async function notify(title,body){
   try{if(swReg)await swReg.showNotification(title,{body,tag:title+body,icon:'icon-192.png',vibrate:[120,60,120]});else new Notification(title,{body})}
   catch(e){try{new Notification(title,{body})}catch{}}
+}
+async function sendBrief(){
+  await fetchWeather();
+  const its=dayItems(new Date()),n=its.filter(i=>i.k!=='t').length,tc=its.length-n;
+  notify('Good morning',(wxSummary()||'Weather unavailable.')+` ${n} on your schedule`+(tc?`, ${tc} task${tc===1?'':'s'} due`:'')+'.');
 }
 function tick(){
   if(!('Notification' in window)||Notification.permission!=='granted')return;
@@ -499,9 +535,7 @@ function tick(){
   }
   const b=at(now,cfg.brief).getTime();
   if(now>=b&&now.getTime()<=b+60*6e4&&!fired[today+'|brief']){
-    fired[today+'|brief']=1;
-    const its=dayItems(now),n=its.filter(i=>i.k!=='t').length,tc=its.length-n;
-    notify('Good morning',`${n} on your schedule`+(tc?`, ${tc} task${tc===1?'':'s'} due`:'')+'. '+wxSummary());
+    fired[today+'|brief']=1;sendBrief();
   }
   save('db_fired',fired);save('db_firedT',firedT);save('db_firedD',firedD);
 }
