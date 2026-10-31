@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#14213D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Daybook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
@@ -23,7 +26,7 @@ h1{font-size:15px;font-weight:600;margin:0 0 4px;color:var(--mute)}
 .wx .t{font-size:40px;font-weight:800;letter-spacing:-.03em}
 .wx small{color:var(--mute);display:block}
 h2{font-size:18px;margin:0 0 10px;font-weight:600}
-.ev{display:grid;grid-template-columns:56px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.ev{display:grid;grid-template-columns:64px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .ev:first-of-type{border-top:0}
 .ev .tm{font-weight:800;font-variant-numeric:tabular-nums}
 .ev.done .ti{text-decoration:line-through;color:var(--mute)}
@@ -45,6 +48,13 @@ input[type=checkbox].ck{width:26px;height:26px;min-height:0;accent-color:var(--o
 .ck-wrap{display:flex;align-items:center;gap:10px}
 .empty{color:var(--mute);margin:4px 0}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.tm small{font-weight:400;font-size:12px}
+.seg{display:flex;gap:6px;margin-bottom:4px}.seg label{flex:1;margin:0}.seg input{display:none}
+.seg span{display:block;text-align:center;padding:10px;border:1px solid var(--line);border-radius:10px;font-weight:600;cursor:pointer}
+.seg input:checked+span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pri{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;margin-right:6px;color:#fff}
+.p1{background:var(--acc)}.p2{background:#E9A23B;color:#14213D}.p3{background:var(--mute)}
+.late{color:var(--acc);font-weight:600}
 #status{font-size:14px;color:var(--mute);margin-top:8px}
 .hide{display:none}
 </style>
@@ -65,20 +75,33 @@ input[type=checkbox].ck{width:26px;height:26px;min-height:0;accent-color:var(--o
   </section>
 
   <section class="card">
-    <h2>Add an event or task</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2 style="margin:0">Tasks</h2>
+      <select id="tsort" style="width:auto" aria-label="Sort tasks"><option value="due">By deadline</option><option value="pri">By priority</option></select></div>
+    <div id="taskList"></div>
+  </section>
+
+  <section class="card">
+    <h2>Add new</h2>
+    <div class="seg" id="kind"><label><input type="radio" name="kind" value="event" checked><span>Event</span></label><label><input type="radio" name="kind" value="task"><span>Task</span></label></div>
     <form id="f" onsubmit="return false">
       <label for="title">What is it?</label>
       <input id="title" placeholder="Math class, gym, history homework" required>
-      <div class="row">
+      <div id="evBox">
         <div><label for="type">Repeats</label>
           <select id="type"><option value="once">Does not repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option></select></div>
-        <div><label for="time">Time</label><input id="time" type="time" value="08:00" required></div>
+        <div class="row"><div><label for="time">Starts</label><input id="time" type="time" value="08:00" required></div><div><label for="end">Ends (optional)</label><input id="end" type="time"></div>
       </div>
       <div id="dateBox"><label for="date">Date</label><input id="date" type="date"></div>
       <div id="dayBox" class="hide"><label>On these days</label>
         <div class="days" id="days"></div></div>
       <label for="lead">Remind me</label>
       <select id="lead"><option value="0">At the time</option><option value="5">5 min before</option><option value="10">10 min before</option><option value="15" selected>15 min before</option><option value="30">30 min before</option><option value="60">1 hour before</option><option value="1440">1 day before</option></select>
+      </div>
+      <div id="taBox" class="hide">
+        <div class="row"><div><label for="tdue">Deadline</label><input id="tdue" type="date"></div><div><label for="ttime">Time (optional)</label><input id="ttime" type="time"></div></div>
+        <div class="row"><div><label for="pri">Priority</label><select id="pri"><option value="1">High</option><option value="2" selected>Medium</option><option value="3">Low</option></select></div>
+        <div><label for="tlead">Remind me</label><select id="tlead"><option value="-1">No reminder</option><option value="0">At the deadline</option><option value="60" selected>1 hour before</option><option value="1440">1 day before</option></select></div></div>
+      </div>
       <label for="note">Note (room, teacher, details)</label>
       <input id="note" placeholder="Optional">
       <p><button id="add">Add</button></p>
@@ -109,7 +132,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const ymd=d=>d.toLocaleDateString('en-CA');
 const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 let events=load('db_ev',[]), cfg=load('db_cfg',{city:'',lat:null,lon:null,brief:'07:30'}), fired=load('db_fired',{}), wx=load('db_wx',null);
-let swReg=null;
+let swReg=null, tasks=load('db_tasks',[]), firedT=load('db_firedT',{});
 
 /* ---------- helpers ---------- */
 function occursOn(e,d){
@@ -141,7 +164,7 @@ function render(){
   $('#todayList').innerHTML=today.length?today.map(e=>{
     const dn=(e.done||{})[key];
     return `<div class="ev ${dn?'done':''} ${e.id===nextId?'next':''}">
-      <span class="tm">${e.time}</span>
+      <span class="tm">${e.time}${e.end?`<small>to ${e.end}</small>`:''}</span>
       <span><span class="ti">${esc(e.title)}</span>${e.note?`<small>${esc(e.note)}</small>`:''}</span>
       <span class="ck-wrap"><input class="ck" type="checkbox" aria-label="Done: ${esc(e.title)}" ${dn?'checked':''} data-done="${e.id}"></span></div>`}).join('')
     :'<p class="empty">Nothing planned today. Add something below.</p>';
@@ -149,17 +172,40 @@ function render(){
   const rep=e=>e.type==='once'?e.date:e.type==='daily'?'Every day':'Every '+(e.days||[]).map(d=>DN[d]).join(', ');
   const all=[...events].sort((a,b)=>(a.type==='once'?a.date:'0')+a.time<(b.type==='once'?b.date:'0')+b.time?-1:1);
   $('#allList').innerHTML=all.length?all.map(e=>`<div class="ev" style="grid-template-columns:1fr auto">
-    <span><span class="ti">${esc(e.title)}</span><small>${rep(e)} at ${e.time}, reminder ${e.lead?e.lead>=1440?'1 day':e.lead+' min':'at time'} before</small></span>
+    <span><span class="ti">${esc(e.title)}</span><small>${rep(e)} at ${e.time}${e.end?' to '+e.end:''}, reminder ${e.lead?(e.lead>=1440?'1 day':e.lead+' min')+' before':'at start'}</small></span>
     <button class="x" data-del="${e.id}" aria-label="Delete ${esc(e.title)}">Delete</button></div>`).join(''):'<p class="empty">No events yet.</p>';
-  $('#city').value=cfg.city||'';$('#brief').value=cfg.brief;
+  renderTasks();$('#city').value=cfg.city||'';$('#brief').value=cfg.brief;
   const p='Notification' in window?Notification.permission:'unsupported';
   $('#status').textContent=p==='granted'?'Notifications are on. Keep this app open or installed for reminders.':p==='denied'?'Notifications are blocked. Allow them in Chrome site settings.':p==='unsupported'?'This browser does not support notifications.':'Notifications are off.';
+}
+
+/* ---------- tasks ---------- */
+const PRI={1:'High',2:'Medium',3:'Low'};
+function fmtDue(t){
+  const d=new Date(t.due+'T00:00'),n=new Date();n.setHours(0,0,0,0);
+  const diff=Math.round((d-n)/864e5);
+  const lab=diff===0?'today':diff===1?'tomorrow':d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  return lab+(t.time?' at '+t.time:'');
+}
+function renderTasks(){
+  const now=new Date(),today=ymd(now),hm=now.toTimeString().slice(0,5),by=$('#tsort').value;
+  const k=t=>t.due+(t.time||'99');
+  const cmp=(a,b)=>{const c=k(a)<k(b)?-1:k(a)>k(b)?1:0;return by==='pri'?(a.pri-b.pri||c):(c||a.pri-b.pri)};
+  const row=t=>{
+    const late=!t.done&&(t.due<today||(t.due===today&&t.time&&t.time<hm));
+    return `<div class="ev ${t.done?'done':''}" style="grid-template-columns:auto 1fr auto">
+      <span class="ck-wrap"><input class="ck" type="checkbox" aria-label="Done: ${esc(t.title)}" ${t.done?'checked':''} data-tdone="${t.id}"></span>
+      <span><span class="ti">${esc(t.title)}</span><small><span class="pri p${t.pri}">${PRI[t.pri]}</span><span class="${late?'late':''}">${late?'Overdue, ':'Due '}${fmtDue(t)}</span>${t.note?', '+esc(t.note):''}</small></span>
+      <button class="x" data-tdel="${t.id}" aria-label="Delete ${esc(t.title)}">Delete</button></div>`};
+  const open=tasks.filter(t=>!t.done).sort(cmp),done=tasks.filter(t=>t.done);
+  $('#taskList').innerHTML=(open.length?open.map(row).join(''):'<p class="empty">No open tasks. Add one below.</p>')
+   +(done.length?`<p class="empty" style="margin-top:12px">Completed (${done.length}) <button class="x" data-tclear="1">Clear</button></p>`+done.map(row).join(''):'');
 }
 
 /* ---------- notifications ---------- */
 async function notify(title,body){
   try{
-    if(swReg)await swReg.showNotification(title,{body,tag:title+body,vibrate:[120,60,120]});
+    if(swReg)await swReg.showNotification(title,{body,tag:title+body,icon:'icon-192.png',vibrate:[120,60,120]});
     else new Notification(title,{body});
   }catch(e){try{new Notification(title,{body})}catch{}}
 }
@@ -174,9 +220,15 @@ function tick(){
     const k=today+'|'+e.id;
     if(now>=fire&&now.getTime()<=t+10*6e4&&!fired[k]&&!(e.done||{})[today]){
       fired[k]=1;
-      notify(e.title,(e.lead?`Starts at ${e.time}`:`Now, ${e.time}`)+(e.note?'. '+e.note:''));
+      notify(e.title,(e.lead?`Starts at ${e.time}`:`Now, ${e.time}`)+(e.end?` until ${e.end}`:'')+(e.note?'. '+e.note:''));
     }
   }
+  for(const t of tasks){
+    if(t.done||t.lead<0||firedT[t.id])continue;
+    const due=at(new Date(t.due+'T00:00'),t.time||'09:00').getTime(),fire=due-t.lead*6e4;
+    if(now.getTime()>=fire&&now.getTime()<=due+6*36e5){firedT[t.id]=1;notify('Task: '+t.title,`Due ${fmtDue(t)}, ${PRI[t.pri].toLowerCase()} priority`+(t.note?'. '+t.note:''))}
+  }
+  save('db_firedT',firedT);
   const b=at(now,cfg.brief).getTime();
   if(now>=b&&now.getTime()<=b+60*6e4&&!fired[today+'|brief']){
     fired[today+'|brief']=1;
@@ -210,9 +262,18 @@ $('#days').innerHTML=[1,2,3,4,5,6,0].map(d=>`<label><input type="checkbox" value
 $('#date').value=ymd(new Date());
 $('#type').onchange=()=>{const t=$('#type').value;$('#dateBox').classList.toggle('hide',t!=='once');$('#dayBox').classList.toggle('hide',t!=='weekly')};
 $('#add').onclick=()=>{
-  const title=$('#title').value.trim(),time=$('#time').value,type=$('#type').value;
-  if(!title||!time){$('#title').focus();return}
-  const e={id:Date.now().toString(36),title,time,type,lead:+$('#lead').value,note:$('#note').value.trim(),done:{}};
+  const title=$('#title').value.trim();
+  const kind=document.querySelector('input[name=kind]:checked').value;
+  if(!title){$('#title').focus();return}
+  if(kind==='task'){
+    const due=$('#tdue').value;
+    if(!due){$('#tdue').focus();return}
+    tasks.push({id:Date.now().toString(36),title,pri:+$('#pri').value,due,time:$('#ttime').value,lead:+$('#tlead').value,note:$('#note').value.trim(),done:false});
+    save('db_tasks',tasks);$('#title').value='';$('#note').value='';render();return}
+  const time=$('#time').value,type=$('#type').value,end=$('#end').value;
+  if(!time){$('#time').focus();return}
+  if(end&&end<=time){$('#status').textContent='The end time must be after the start time.';return}
+  const e={id:Date.now().toString(36),title,time,end,type,lead:+$('#lead').value,note:$('#note').value.trim(),done:{}};
   if(type==='once'){e.date=$('#date').value;if(!e.date)return}
   if(type==='weekly'){e.days=[...document.querySelectorAll('#days input:checked')].map(i=>+i.value);if(!e.days.length){$('#status').textContent='Pick at least one day.';return}}
   events.push(e);save('db_ev',events);
@@ -229,6 +290,20 @@ document.addEventListener('click',ev=>{
   events=events.filter(x=>x.id!==id);save('db_ev',events);render();
 });
 $('#city').addEventListener('change',setCity);
+function setKind(){const t=document.querySelector('input[name=kind]:checked').value==='task';
+  $('#evBox').classList.toggle('hide',t);$('#taBox').classList.toggle('hide',!t);$('#add').textContent=t?'Add task':'Add event'}
+$('#kind').onchange=setKind;setKind();
+$('#tsort').onchange=renderTasks;
+{const tm=new Date();tm.setDate(tm.getDate()+1);$('#tdue').value=ymd(tm)}
+document.addEventListener('click',ev=>{
+  const d=ev.target.dataset||{};
+  if(d.tdel)tasks=tasks.filter(x=>x.id!==d.tdel);else if(d.tclear)tasks=tasks.filter(x=>!x.done);else return;
+  save('db_tasks',tasks);render();
+});
+document.addEventListener('change',ev=>{
+  const id=ev.target.dataset&&ev.target.dataset.tdone;if(!id)return;
+  const t=tasks.find(x=>x.id===id);t.done=ev.target.checked;save('db_tasks',tasks);render();
+});
 $('#brief').onchange=()=>{cfg.brief=$('#brief').value||'07:30';save('db_cfg',cfg)};
 $('#geo').onclick=()=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{
   cfg.lat=p.coords.latitude;cfg.lon=p.coords.longitude;cfg.city='';save('db_cfg',cfg);fetchWeather();
