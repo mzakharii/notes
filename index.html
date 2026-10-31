@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14213D">
+<title>Daybook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E8EDF2;--card:#fff;--ink:#14213D;--mute:#5B6B82;--line:#CBD5E1;--acc:#E4572E;--ok:#2A9D8F;
+--f:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0E1626;--card:#17233A;--ink:#EAF0F8;--mute:#9AA9C0;--line:#2A3A57}}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.45 var(--f);
+padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+main{max-width:560px;margin:0 auto;padding:16px}
+h1{font-size:15px;font-weight:600;margin:0 0 4px;color:var(--mute)}
+.date{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.wx{display:flex;gap:14px;align-items:center}
+.wx .t{font-size:40px;font-weight:800;letter-spacing:-.03em}
+.wx small{color:var(--mute);display:block}
+h2{font-size:18px;margin:0 0 10px;font-weight:600}
+.ev{display:grid;grid-template-columns:56px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.ev:first-of-type{border-top:0}
+.ev .tm{font-weight:800;font-variant-numeric:tabular-nums}
+.ev.done .ti{text-decoration:line-through;color:var(--mute)}
+.ev.next{box-shadow:inset 3px 0 0 var(--acc);padding-left:10px}
+.ev small{color:var(--mute);display:block}
+input,select,button{font:inherit;color:var(--ink)}
+input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-height:44px}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days label{margin:0;display:block}
+.days input{display:none}
+.days span{display:inline-block;min-width:42px;text-align:center;padding:10px 0;border:1px solid var(--line);border-radius:10px;font-size:14px;cursor:pointer}
+.days input:checked+span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button{border:0;border-radius:10px;padding:12px 16px;min-height:44px;background:var(--acc);color:#fff;font-weight:600;cursor:pointer}
+button.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.x{background:none;color:var(--mute);padding:8px;min-height:40px}
+input[type=checkbox].ck{width:26px;height:26px;min-height:0;accent-color:var(--ok)}
+.ck-wrap{display:flex;align-items:center;gap:10px}
+.empty{color:var(--mute);margin:4px 0}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+#status{font-size:14px;color:var(--mute);margin-top:8px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+  <h1 id="greet"></h1>
+  <p class="date" id="today"></p>
+
+  <section class="card wx" id="wx" aria-live="polite">
+    <div class="t" id="wxT">--</div>
+    <div><strong id="wxD">Weather not set up</strong><small id="wxS">Add your city in Settings below.</small></div>
+  </section>
+
+  <section class="card">
+    <h2>Today</h2>
+    <div id="todayList"></div>
+  </section>
+
+  <section class="card">
+    <h2>Add an event or task</h2>
+    <form id="f" onsubmit="return false">
+      <label for="title">What is it?</label>
+      <input id="title" placeholder="Math class, gym, history homework" required>
+      <div class="row">
+        <div><label for="type">Repeats</label>
+          <select id="type"><option value="once">Does not repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option></select></div>
+        <div><label for="time">Time</label><input id="time" type="time" value="08:00" required></div>
+      </div>
+      <div id="dateBox"><label for="date">Date</label><input id="date" type="date"></div>
+      <div id="dayBox" class="hide"><label>On these days</label>
+        <div class="days" id="days"></div></div>
+      <label for="lead">Remind me</label>
+      <select id="lead"><option value="0">At the time</option><option value="5">5 min before</option><option value="10">10 min before</option><option value="15" selected>15 min before</option><option value="30">30 min before</option><option value="60">1 hour before</option><option value="1440">1 day before</option></select>
+      <label for="note">Note (room, teacher, details)</label>
+      <input id="note" placeholder="Optional">
+      <p><button id="add">Add</button></p>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>All events</h2>
+    <div id="allList"></div>
+  </section>
+
+  <section class="card">
+    <h2>Settings</h2>
+    <label for="city">City for weather</label>
+    <div class="row"><input id="city" placeholder="e.g. Krakow"><button class="sec" id="geo">Use my location</button></div>
+    <label for="brief">Morning summary at</label>
+    <input id="brief" type="time" value="07:30">
+    <p><button id="notif" class="sec">Turn on notifications</button></p>
+    <div id="status"></div>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch{return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ymd=d=>d.toLocaleDateString('en-CA');
+const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let events=load('db_ev',[]), cfg=load('db_cfg',{city:'',lat:null,lon:null,brief:'07:30'}), fired=load('db_fired',{}), wx=load('db_wx',null);
+let swReg=null;
+
+/* ---------- helpers ---------- */
+function occursOn(e,d){
+  if(e.type==='once')return e.date===ymd(d);
+  if(e.type==='daily')return true;
+  return (e.days||[]).includes(d.getDay());
+}
+function at(d,hm){const [h,m]=hm.split(':').map(Number);const t=new Date(d);t.setHours(h,m,0,0);return t}
+const WX={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+function wxSummary(){
+  if(!wx)return '';
+  return `${WX[wx.code]||'Weather'}, ${wx.min}° to ${wx.max}°C, ${wx.rain}% chance of rain`+(wx.rain>=50?'. Take an umbrella.':'.');
+}
+
+/* ---------- render ---------- */
+function render(){
+  const now=new Date();
+  const h=now.getHours();
+  $('#greet').textContent=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+  $('#today').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+
+  if(wx){$('#wxT').textContent=Math.round(wx.now)+'°';$('#wxD').textContent=WX[wx.code]||'Weather';
+    $('#wxS').textContent=`High ${wx.max}°, low ${wx.min}°, rain ${wx.rain}%`+(cfg.city?' in '+cfg.city:'')}
+
+  const today=events.filter(e=>occursOn(e,now)).sort((a,b)=>a.time.localeCompare(b.time));
+  const key=ymd(now);
+  const nowHM=now.toTimeString().slice(0,5);
+  let nextId=(today.find(e=>e.time>=nowHM&&!(e.done||{})[key])||{}).id;
+  $('#todayList').innerHTML=today.length?today.map(e=>{
+    const dn=(e.done||{})[key];
+    return `<div class="ev ${dn?'done':''} ${e.id===nextId?'next':''}">
+      <span class="tm">${e.time}</span>
+      <span><span class="ti">${esc(e.title)}</span>${e.note?`<small>${esc(e.note)}</small>`:''}</span>
+      <span class="ck-wrap"><input class="ck" type="checkbox" aria-label="Done: ${esc(e.title)}" ${dn?'checked':''} data-done="${e.id}"></span></div>`}).join('')
+    :'<p class="empty">Nothing planned today. Add something below.</p>';
+
+  const rep=e=>e.type==='once'?e.date:e.type==='daily'?'Every day':'Every '+(e.days||[]).map(d=>DN[d]).join(', ');
+  const all=[...events].sort((a,b)=>(a.type==='once'?a.date:'0')+a.time<(b.type==='once'?b.date:'0')+b.time?-1:1);
+  $('#allList').innerHTML=all.length?all.map(e=>`<div class="ev" style="grid-template-columns:1fr auto">
+    <span><span class="ti">${esc(e.title)}</span><small>${rep(e)} at ${e.time}, reminder ${e.lead?e.lead>=1440?'1 day':e.lead+' min':'at time'} before</small></span>
+    <button class="x" data-del="${e.id}" aria-label="Delete ${esc(e.title)}">Delete</button></div>`).join(''):'<p class="empty">No events yet.</p>';
+  $('#city').value=cfg.city||'';$('#brief').value=cfg.brief;
+  const p='Notification' in window?Notification.permission:'unsupported';
+  $('#status').textContent=p==='granted'?'Notifications are on. Keep this app open or installed for reminders.':p==='denied'?'Notifications are blocked. Allow them in Chrome site settings.':p==='unsupported'?'This browser does not support notifications.':'Notifications are off.';
+}
+
+/* ---------- notifications ---------- */
+async function notify(title,body){
+  try{
+    if(swReg)await swReg.showNotification(title,{body,tag:title+body,vibrate:[120,60,120]});
+    else new Notification(title,{body});
+  }catch(e){try{new Notification(title,{body})}catch{}}
+}
+function tick(){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const now=new Date(),today=ymd(now);
+  for(const k of Object.keys(fired))if(!k.startsWith(today))delete fired[k];
+  for(const e of events){
+    if(!occursOn(e,now)&&!(e.lead>=1440&&occursOn(e,new Date(now.getTime()+864e5))))continue;
+    const base=occursOn(e,now)?now:new Date(now.getTime()+864e5);
+    const t=at(base,e.time).getTime(),fire=t-(e.lead||0)*6e4;
+    const k=today+'|'+e.id;
+    if(now>=fire&&now.getTime()<=t+10*6e4&&!fired[k]&&!(e.done||{})[today]){
+      fired[k]=1;
+      notify(e.title,(e.lead?`Starts at ${e.time}`:`Now, ${e.time}`)+(e.note?'. '+e.note:''));
+    }
+  }
+  const b=at(now,cfg.brief).getTime();
+  if(now>=b&&now.getTime()<=b+60*6e4&&!fired[today+'|brief']){
+    fired[today+'|brief']=1;
+    const n=events.filter(e=>occursOn(e,now)).length;
+    notify('Good morning',`${n} item${n===1?'':'s'} today. `+wxSummary());
+  }
+  save('db_fired',fired);
+}
+
+/* ---------- weather ---------- */
+async function fetchWeather(){
+  if(cfg.lat==null)return;
+  try{
+    const u=`https://api.open-meteo.com/v1/forecast?latitude=${cfg.lat}&longitude=${cfg.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=1`;
+    const j=await (await fetch(u)).json();
+    wx={now:j.current.temperature_2m,code:j.current.weather_code,max:Math.round(j.daily.temperature_2m_max[0]),min:Math.round(j.daily.temperature_2m_min[0]),rain:j.daily.precipitation_probability_max[0]||0};
+    save('db_wx',wx);render();
+  }catch{$('#wxS').textContent='Could not load weather. Check your connection.'}
+}
+async function setCity(){
+  const name=$('#city').value.trim();if(!name)return;
+  try{
+    const j=await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1`)).json();
+    if(!j.results){$('#status').textContent='City not found. Try another spelling.';return}
+    const r=j.results[0];cfg.city=r.name;cfg.lat=r.latitude;cfg.lon=r.longitude;save('db_cfg',cfg);fetchWeather();render();
+  }catch{$('#status').textContent='Could not look up that city.'}
+}
+
+/* ---------- events ---------- */
+$('#days').innerHTML=[1,2,3,4,5,6,0].map(d=>`<label><input type="checkbox" value="${d}"><span>${DN[d]}</span></label>`).join('');
+$('#date').value=ymd(new Date());
+$('#type').onchange=()=>{const t=$('#type').value;$('#dateBox').classList.toggle('hide',t!=='once');$('#dayBox').classList.toggle('hide',t!=='weekly')};
+$('#add').onclick=()=>{
+  const title=$('#title').value.trim(),time=$('#time').value,type=$('#type').value;
+  if(!title||!time){$('#title').focus();return}
+  const e={id:Date.now().toString(36),title,time,type,lead:+$('#lead').value,note:$('#note').value.trim(),done:{}};
+  if(type==='once'){e.date=$('#date').value;if(!e.date)return}
+  if(type==='weekly'){e.days=[...document.querySelectorAll('#days input:checked')].map(i=>+i.value);if(!e.days.length){$('#status').textContent='Pick at least one day.';return}}
+  events.push(e);save('db_ev',events);
+  $('#title').value='';$('#note').value='';render();
+};
+document.addEventListener('change',ev=>{
+  const id=ev.target.dataset&&ev.target.dataset.done;if(!id)return;
+  const e=events.find(x=>x.id===id),k=ymd(new Date());e.done=e.done||{};
+  if(ev.target.checked)e.done[k]=1;else delete e.done[k];
+  save('db_ev',events);render();
+});
+document.addEventListener('click',ev=>{
+  const id=ev.target.dataset&&ev.target.dataset.del;if(!id)return;
+  events=events.filter(x=>x.id!==id);save('db_ev',events);render();
+});
+$('#city').addEventListener('change',setCity);
+$('#brief').onchange=()=>{cfg.brief=$('#brief').value||'07:30';save('db_cfg',cfg)};
+$('#geo').onclick=()=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{
+  cfg.lat=p.coords.latitude;cfg.lon=p.coords.longitude;cfg.city='';save('db_cfg',cfg);fetchWeather();
+},()=>{$('#status').textContent='Location was blocked. Type your city instead.'}):0;
+$('#notif').onclick=async()=>{
+  if(!('Notification' in window))return;
+  await Notification.requestPermission();render();tick();
+};
+
+/* ---------- start ---------- */
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(r=>{swReg=r}).catch(()=>{});
+render();fetchWeather();tick();
+setInterval(tick,20000);setInterval(render,60000);setInterval(fetchWeather,30*60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();tick();fetchWeather()}});
+</script>
+</body>
+</html>
