@@ -74,6 +74,8 @@ input[type=checkbox].ck{width:26px;height:26px;min-height:0;accent-color:var(--o
 .dots .ds{background:var(--ds)}.dots .dp{background:var(--dp)}.dots .do{background:var(--do)}.dots .dd{background:var(--dd)}.dots .dt{background:var(--acc)}
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:18px;width:min(92vw,360px);font:inherit}
 dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p{margin:0 0 10px}
+#alarm{text-align:center}.live.tmr{background:var(--ink);color:var(--bg)}
+.feat{padding:10px 0;border-top:1px solid var(--line)}.feat:first-of-type{border-top:0}.feat .chk{margin:0}
 #msg,#smsg{font-size:14px;color:var(--mute);margin-top:8px}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 </style>
@@ -82,101 +84,106 @@ dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p
 <main>
 
 <div id="pMain" class="page on">
-  <div class="top"><div><h1 id="greet"></h1><p class="date" id="today"></p></div><button class="sec" data-go="settings">Settings</button></div>
+  <div class="top"><div><h1 id="greet"></h1><p class="date" id="today"></p></div><button class="sec" data-go="settings" data-i="settings">Settings</button></div>
   <section class="card wx" aria-live="polite">
     <div class="t" id="wxT">--</div>
     <div><strong id="wxD">Weather not set up</strong><small id="wxS">Add your city in Settings.</small></div>
   </section>
   <section class="card hide" id="nudge">
-    <strong>Back up your data</strong><small id="nudgeT"></small>
-    <p style="margin:10px 0 0"><button id="nudgeBtn">Back up now</button></p>
+    <strong data-i="backupT">Back up your data</strong><small id="nudgeT"></small>
+    <p style="margin:10px 0 0"><button id="nudgeBtn" data-i="backupNow">Back up now</button></p>
   </section>
-  <section class="card"><h2>Coming up</h2><div id="todayList"></div></section>
-  <section class="card"><h2>Tasks</h2><div id="taskList"></div></section>
-  <div class="bar"><button class="sec" data-go="calendar">Calendar</button><button data-go="add">Add</button></div>
+  <section class="card"><h2 data-i="comingUp">Coming up</h2><div id="todayList"></div></section>
+  <section class="card"><h2 data-i="tasks">Tasks</h2><div id="taskList"></div></section>
+  <div class="bar"><button class="sec" data-go="calendar" data-i="calendar">Calendar</button><button data-go="add" data-i="add">Add</button></div>
 </div>
 
 <div id="pAdd" class="page">
-  <div class="top"><button class="sec" data-go="">Back</button></div>
+  <div class="top"><button class="sec" data-go="" data-i="back">Back</button></div>
   <h2 id="formH" style="font-size:26px;margin:14px 0">Add new</h2>
   <section class="card">
     <div class="seg" id="kind">
-      <label><input type="radio" name="kind" value="event" checked><span>Event</span></label>
-      <label><input type="radio" name="kind" value="task"><span>Task</span></label>
-      <label><input type="radio" name="kind" value="date"><span>Yearly date</span></label>
+      <label><input type="radio" name="kind" value="event" checked><span data-i="event">Event</span></label>
+      <label><input type="radio" name="kind" value="task"><span data-i="task">Task</span></label>
+      <label><input type="radio" name="kind" value="date"><span data-i="yearly">Yearly date</span></label>
     </div>
-    <label for="title">Title</label>
+    <label for="title" data-i="title">Title</label>
     <input id="title" autocomplete="off">
 
     <div id="evBox">
-      <label>Category</label>
-      <div class="seg" id="cats"><label><input type="radio" name="cat" value="study"><span>Study</span></label><label><input type="radio" name="cat" value="personal"><span>Personal</span></label><label><input type="radio" name="cat" value="other"><span>Others</span></label></div>
+      <label data-i="category">Category</label>
+      <div class="seg" id="cats"><label><input type="radio" name="cat" value="study"><span data-i="study">Study</span></label><label><input type="radio" name="cat" value="personal"><span data-i="personal">Personal</span></label><label><input type="radio" name="cat" value="other"><span data-i="others">Others</span></label></div>
       <div class="row" style="margin-top:10px">
-        <div><label for="type">Repeats</label><select id="type"><option value="once">Does not repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option></select></div>
-        <div id="dateBox"><label for="date">Date</label><input id="date" type="date"></div>
+        <div><label for="type" data-i="repeats">Repeats</label><select id="type"><option value="once" data-i="noRepeat">Does not repeat</option><option value="daily" data-i="everyDay">Every day</option><option value="weekly" data-i="everyWeek">Every week</option></select></div>
+        <div id="dateBox"><label for="date" data-i="date">Date</label><input id="date" type="date"></div>
       </div>
-      <div id="dayBox" class="hide"><label>On these days</label><div class="days" id="days"></div></div>
+      <div id="dayBox" class="hide"><label data-i="onDays">On these days</label><div class="days" id="days"></div></div>
       <div class="row">
-        <div><label for="time">Starts</label><input id="time" type="time"></div>
-        <div><label for="end">Ends (optional)</label><input id="end" type="time"></div>
+        <div><label for="time" data-i="starts">Starts</label><input id="time" type="time"></div>
+        <div><label for="end" data-i="endsOpt">Ends (optional)</label><input id="end" type="time"></div>
       </div>
-      <label for="lead">Remind me</label>
-      <select id="lead"><option value="0">At the start</option><option value="5">5 min before</option><option value="10">10 min before</option><option value="15">15 min before</option><option value="30">30 min before</option><option value="60">1 hour before</option><option value="1440">1 day before</option></select>
+      <label for="lead" data-i="remindMe">Remind me</label>
+      <select id="lead"></select>
     </div>
 
     <div id="taBox" class="hide">
       <div class="row">
-        <div><label for="tdue">Deadline</label><input id="tdue" type="date"></div>
-        <div><label for="ttime">Time (optional)</label><input id="ttime" type="time"></div>
+        <div><label for="tdue" data-i="deadline">Deadline</label><input id="tdue" type="date"></div>
+        <div><label for="ttime" data-i="timeOpt">Time (optional)</label><input id="ttime" type="time"></div>
       </div>
       <div class="row">
-        <div><label for="pri">Priority</label><select id="pri"><option value="1">High</option><option value="2">Medium</option><option value="3">Low</option></select></div>
-        <div><label for="tlead">Remind me</label><select id="tlead"><option value="-1">No reminder</option><option value="0">At the deadline</option><option value="60">1 hour before</option><option value="1440">1 day before</option></select></div>
+        <div><label for="pri" data-i="priority">Priority</label><select id="pri"><option value="1" data-i="pHigh">High</option><option value="2" data-i="pMed">Medium</option><option value="3" data-i="pLow">Low</option></select></div>
+        <div><label for="tlead" data-i="remindMe">Remind me</label><select id="tlead"></select></div>
       </div>
     </div>
 
     <div id="dtBox" class="hide">
       <div class="row">
-        <div><label for="dlabel">Type</label><select id="dlabel"><option>Birthday</option><option>Anniversary</option><option>Other</option></select></div>
-        <div><label for="ddate">Date</label><input id="ddate" type="date"></div>
+        <div><label for="dlabel" data-i="typeL">Type</label><select id="dlabel"><option value="Birthday" data-i="birthday">Birthday</option><option value="Anniversary" data-i="anniv">Anniversary</option><option value="Other" data-i="other">Other</option></select></div>
+        <div><label for="ddate" data-i="date">Date</label><input id="ddate" type="date"></div>
       </div>
-      <label class="chk" style="margin-top:12px"><input type="checkbox" id="dAge" checked> Show age or years (uses the year of the date)</label>
-      <label for="dlead">Remind me</label>
-      <select id="dlead"><option value="0">On the day, 09:00</option><option value="1">1 day before</option><option value="7">1 week before</option><option value="-1">No reminder</option></select>
+      <label class="chk" style="margin-top:12px"><input type="checkbox" id="dAge" checked> <span data-i="showAge">Show age or years (uses the year of the date)</span></label>
+      <label for="dlead" data-i="remindMe">Remind me</label>
+      <select id="dlead"></select>
     </div>
 
-    <label for="note">Note (room, teacher, details)</label>
-    <input id="note" placeholder="Optional" autocomplete="off">
-    <p style="display:flex;gap:10px;margin-bottom:0"><button id="save">Add event</button><button id="del" class="sec hide">Delete</button></p>
+    <label for="note" data-i="note">Note (room, teacher, details)</label>
+    <input id="note" data-ip="optional" placeholder="Optional" autocomplete="off">
+    <p style="display:flex;gap:10px;margin-bottom:0"><button id="save">Add event</button><button id="del" class="sec hide" data-i="del">Delete</button></p>
     <div id="msg" aria-live="polite"></div>
   </section>
 </div>
 
 <div id="pCal" class="page">
-  <div class="top"><button class="sec" data-go="">Back</button>
-    <div class="seg" style="width:190px"><label><input type="radio" name="cv" value="week" checked><span>Week</span></label><label><input type="radio" name="cv" value="month"><span>Month</span></label></div></div>
-  <div class="top" style="margin:14px 0"><button class="sec" id="prev" aria-label="Previous">Prev</button><h2 id="calT" style="margin:0;text-align:center"></h2><button class="sec" id="next" aria-label="Next">Next</button></div>
-  <div class="leg"><span style="background:var(--cs)">Study</span><span style="background:var(--cp)">Personal</span><span style="background:var(--co)">Others</span><span style="background:var(--cd)">Birthdays</span></div>
+  <div class="top"><button class="sec" data-go="" data-i="back">Back</button>
+    <div class="seg" style="width:190px"><label><input type="radio" name="cv" value="week" checked><span data-i="week">Week</span></label><label><input type="radio" name="cv" value="month"><span data-i="month">Month</span></label></div></div>
+  <div class="top" style="margin:14px 0"><button class="sec" id="prev" aria-label="Previous" data-i="prev">Prev</button><h2 id="calT" style="margin:0;text-align:center"></h2><button class="sec" id="next" aria-label="Next" data-i="next">Next</button></div>
+  <div class="leg"><span style="background:var(--cs)" data-i="study">Study</span><span style="background:var(--cp)" data-i="personal">Personal</span><span style="background:var(--co)" data-i="others">Others</span><span style="background:var(--cd)" data-i="birthdays">Birthdays</span></div>
   <div id="calBody"></div>
 </div>
 
 <div id="pSet" class="page">
-  <div class="top"><button class="sec" data-go="">Back</button></div>
-  <h2 style="font-size:26px;margin:14px 0">Settings</h2>
+  <div class="top"><button class="sec" data-go="" data-i="back">Back</button></div>
+  <h2 style="font-size:26px;margin:14px 0" data-i="settings">Settings</h2>
+  <section class="card"><h2 data-i="language">Language</h2>
+    <select id="lang" aria-label="Language"><option value="en">English</option><option value="ru">Русский</option><option value="pl">Polski</option><option value="de">Deutsch</option></select></section>
   <section class="card">
-    <h2>Weather</h2>
-    <label for="city">City</label>
-    <div class="row"><input id="city" placeholder="e.g. Krakow"><button class="sec" id="geo">Use my location</button></div>
-    <label for="brief">Morning summary at</label>
-    <input id="brief" type="time">
-    <p><button id="notif" class="sec">Turn on notifications</button></p>
+    <h2 data-i="weatherLoc">Weather location</h2>
+    <label for="city" data-i="city">City</label>
+    <div class="row"><input id="city" data-ip="phCity" placeholder="e.g. Krakow"><button class="sec" id="geo" data-i="useLoc">Use my location</button></div>
+  </section>
+  <section class="card">
+    <h2 data-i="features">Features</h2>
+    <small data-i="featuresD">Turn extra functions on or off.</small>
+    <div id="featList"></div>
+    <p><button id="notif" class="sec" data-i="notifOn">Turn on notifications</button></p>
     <div id="status"></div>
   </section>
   <section class="card">
-    <h2>Backup</h2>
+    <h2 data-i="backup">Backup</h2>
     <small id="lastB" style="margin-bottom:10px"></small>
-    <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px"><button id="exp">Download backup</button><button id="shr" class="sec hide">Send backup</button></p>
-    <label for="imp">Restore from a backup file (adds to what you have)</label>
+    <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px"><button id="exp" data-i="dlB">Download backup</button><button id="shr" class="sec hide" data-i="sendB">Send backup</button></p>
+    <label for="imp" data-i="restoreL">Restore from a backup file (adds to what you have)</label>
     <input id="imp" type="file" accept=".json,application/json">
     <div id="smsg" aria-live="polite"></div>
   </section>
@@ -184,13 +191,16 @@ dialog::backdrop{background:rgba(10,20,40,.55)}dialog button{width:100%}dialog p
 
 </main>
 
-<div id="toast" class="hide" role="status"><span>Task completed</span><button id="undo">Undo</button></div>
+<dialog id="alarm"><h2 id="alT" style="font-size:28px"></h2><p id="alB"></p>
+  <p><button id="alOff" data-i="dismiss">Dismiss</button></p><p style="margin:0"><button id="alSnz" class="sec" data-i="snooze">Snooze 5 min</button></p></dialog>
+
+<div id="toast" class="hide" role="status"><span data-i="taskDone">Task completed</span><button id="undo" data-i="undo">Undo</button></div>
 
 <dialog id="scope">
-  <p><strong>This event repeats.</strong> <span id="sVerb"></span></p>
+  <p><strong data-i="repeatsQ">This event repeats.</strong> <span id="sVerb"></span></p>
   <p><button id="sOne"></button></p>
-  <p><button id="sAll" class="sec">All occurrences</button></p>
-  <p style="margin:0"><button id="sNo" class="x">Cancel</button></p>
+  <p><button id="sAll" class="sec" data-i="allOcc">All occurrences</button></p>
+  <p style="margin:0"><button id="sNo" class="x" data-i="cancel">Cancel</button></p>
 </dialog>
 
 <script>
@@ -199,15 +209,38 @@ const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==nul
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ymd=d=>d.toLocaleDateString('en-CA');
-const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const PRI={1:'High',2:'Medium',3:'Low'};
-const CAT={study:'Study',personal:'Personal',other:'Others'};
-const WX={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+const LOC={en:'en-GB',ru:'ru-RU',pl:'pl-PL',de:'de-DE'},loc=()=>LOC[cfg.lang]||'en-GB';
+const dn=i=>new Date(2023,0,1+i).toLocaleDateString(loc(),{weekday:'short'}),shortD=d=>d.toLocaleDateString(loc(),{day:'numeric',month:'short'});
+const PRI={get 1(){return t('pHigh')},get 2(){return t('pMed')},get 3(){return t('pLow')}};
+const CAT={get study(){return t('study')},get personal(){return t('personal')},get other(){return t('others')}};
+const LBL={get Birthday(){return t('birthday')},get Anniversary(){return t('anniv')},get Other(){return t('other')}};
+const WXK={0:'0',1:'1',2:'2',3:'3',45:'45',48:'45',51:'51',53:'51',55:'51',61:'61',63:'63',65:'65',71:'71',73:'73',75:'75',80:'80',81:'80',82:'82',95:'95',96:'95',99:'95'};
+const wxName=c=>t('w'+(WXK[c]||'x'));
 let events=load('db_ev',[]), tasks=load('db_tasks',[]).filter(t=>!t.done), dates=load('db_dates',[]);
-let cfg=Object.assign({city:'',lat:null,lon:null,brief:'07:30',lastBackup:null},load('db_cfg',{}));
+const lang0=['ru','pl','de'].find(l=>(navigator.language||'').toLowerCase().startsWith(l))||'en';
+let cfg=Object.assign({city:'',lat:null,lon:null,brief:'07:30',eveningAt:'20:00',lang:lang0,lastBackup:null},load('db_cfg',{}));
+cfg.feat=Object.assign({weather:true,evening:false,alarm:false},cfg.feat);
 let fired=load('db_fired',{}), firedT=load('db_firedT',{}), firedD=load('db_firedD',{}), wx=load('db_wx',null);
 let swReg=null, editing=null, calView='week', calRef=new Date(), calSel=ymd(new Date());
 const saveAll=()=>{save('db_ev',events);save('db_tasks',tasks);save('db_dates',dates);save('db_cfg',cfg)};
+
+/* ---------- translations ---------- */
+const T={
+en:{settings:'Settings',backupT:'Back up your data',backupNow:'Back up now',backupNever:'You have not saved a backup yet.',backupDays:'Days since your last backup: {n}',comingUp:'Coming up',tasks:'Tasks',calendar:'Calendar',add:'Add',back:'Back',nothingMore:'Nothing more planned today.',noTasks:'No open tasks.',allDay:'All day',tomorrow:'tomorrow',today:'today',inProg:'in progress',wxNone:'Weather not set up',wxHint:'Add your city in Settings.',wxHL:'High {h}°, low {l}°',rainR:', rain {r}',noRainS:', no rain',gm:'Good morning',ga:'Good afternoon',ge:'Good evening',addNew:'Add new',editEvent:'Edit event',editTask:'Edit task',editDate:'Edit yearly date',event:'Event',task:'Task',yearly:'Yearly date',title:'Title',category:'Category',study:'Study',personal:'Personal',others:'Others',repeats:'Repeats',noRepeat:'Does not repeat',everyDay:'Every day',everyWeek:'Every week',date:'Date',onDays:'On these days',starts:'Starts',endsOpt:'Ends (optional)',remindMe:'Remind me',atStart:'At the start',minB:'{n} min before',hourB:'1 hour before',dayB:'1 day before',weekB:'1 week before',onDay:'On the day, 09:00',noRem:'No reminder',atDl:'At the deadline',deadline:'Deadline',timeOpt:'Time (optional)',priority:'Priority',pHigh:'High',pMed:'Medium',pLow:'Low',typeL:'Type',birthday:'Birthday',anniv:'Anniversary',other:'Other',showAge:'Show age or years (uses the year of the date)',note:'Note (room, teacher, details)',optional:'Optional',saveCh:'Save changes',addEvent:'Add event',addTask:'Add task',addDate:'Add yearly date',del:'Delete',phEvent:'Math class, gym',phTask:'History essay',phDate:'Anna’s birthday',phCity:'e.g. Krakow',enterTitle:'Enter a title.',chooseCat:'Choose a category: Study, Personal or Others.',pickTime:'Pick a start time.',pickDl:'Pick a deadline.',pickDate:'Pick a date.',endAfter:'The end time must be after the start time.',pickDay:'Pick at least one day.',delConfirm:'Delete this item?',repeatsQ:'This event repeats.',applyTo:'Apply your changes to:',deleteQ:'Delete:',onlyDay:'Only {d}',allOcc:'All occurrences',cancel:'Cancel',overdue:'Overdue',due:'Due',atT:'at {t}',taskDone:'Task completed',undo:'Undo',age:'Age: {n}',years:'Years: {n}',week:'Week',month:'Month',prev:'Prev',next:'Next',nothingPl:'Nothing planned.',birthdays:'Birthdays',language:'Language',weatherLoc:'Weather location',city:'City',useLoc:'Use my location',features:'Features',featuresD:'Turn extra functions on or off.',fWeather:'Weather notification',fWeatherD:'Morning notification with the temperature, the daily high and when rain is expected.',fEvening:'Plan for tomorrow',fEveningD:'At a set time, a notification with everything planned for tomorrow.',fAlarm:'Alarm for events',fAlarmD:'Rings an alarm instead of a notification for event reminders.',sendAt:'Send at',test:'Test',notifOn:'Turn on notifications',stOn:'Notifications are on. Keep the app installed so reminders can arrive.',stDen:'Notifications are blocked. Allow them in Chrome site settings.',stUns:'This browser does not support notifications.',stOff:'Notifications are off.',backup:'Backup',dlB:'Download backup',sendB:'Send backup',restoreL:'Restore from a backup file (adds to what you have)',lastB:'Last backup: {d}',noB:'No backup saved yet.',savedMsg:'Backup saved to your Downloads folder as {f}. Keep a copy in Drive or send it to yourself.',restored:'Restored: {a} events, {b} tasks, {c} yearly dates.',badFile:'That file is not a Daybook backup.',wxErr:'Could not load weather. Check your connection.',cityNF:'City not found. Try another spelling.',cityErr:'Could not look up that city.',geoErr:'Location was blocked. Type your city instead.',alarmT:'Alarm',dismiss:'Dismiss',snooze:'Snooze 5 min',nowHigh:'Now {n}°C, high {h}°C today.',rainExp:'Rain expected {r}.',noRainExp:'No rain expected.',wxUnavail:'Weather unavailable.',briefCnt:'Events: {n}. Tasks due: {m}.',tmrPlan:'Tomorrow’s plan',nothingTom:'Nothing planned for tomorrow.',taskN:'Task: {x}',dueTxt:'Due {d}, priority: {p}',startsAt:'Starts at {t}',nowAt:'Now, {t}',until:'until {t}',todayP:'Today: ',tomP:'Tomorrow: ',in7:'In 7 days: ',w0:'Clear',w1:'Mostly clear',w2:'Partly cloudy',w3:'Overcast',w45:'Fog',w51:'Drizzle',w61:'Light rain',w63:'Rain',w65:'Heavy rain',w71:'Light snow',w73:'Snow',w75:'Heavy snow',w80:'Rain showers',w82:'Heavy showers',w95:'Thunderstorm',wx:'Weather'},
+ru:{settings:'Настройки',backupT:'Сохраните резервную копию',backupNow:'Сохранить копию',backupNever:'Резервная копия ещё не сохранялась.',backupDays:'Дней с последней копии: {n}',comingUp:'Ближайшее',tasks:'Задачи',calendar:'Календарь',add:'Добавить',back:'Назад',nothingMore:'На сегодня больше ничего нет.',noTasks:'Нет открытых задач.',allDay:'Весь день',tomorrow:'завтра',today:'сегодня',inProg:'идёт сейчас',wxNone:'Погода не настроена',wxHint:'Укажите город в настройках.',wxHL:'Макс. {h}°, мин. {l}°',rainR:', дождь {r}',noRainS:', без дождя',gm:'Доброе утро',ga:'Добрый день',ge:'Добрый вечер',addNew:'Новая запись',editEvent:'Изменить событие',editTask:'Изменить задачу',editDate:'Изменить дату',event:'Событие',task:'Задача',yearly:'Ежегодная дата',title:'Название',category:'Категория',study:'Учёба',personal:'Личное',others:'Другое',repeats:'Повтор',noRepeat:'Без повтора',everyDay:'Каждый день',everyWeek:'Каждую неделю',date:'Дата',onDays:'По дням',starts:'Начало',endsOpt:'Конец (необязательно)',remindMe:'Напомнить',atStart:'В момент начала',minB:'За {n} мин',hourB:'За 1 час',dayB:'За 1 день',weekB:'За 1 неделю',onDay:'В этот день, 09:00',noRem:'Без напоминания',atDl:'В срок',deadline:'Срок',timeOpt:'Время (необязательно)',priority:'Приоритет',pHigh:'Высокий',pMed:'Средний',pLow:'Низкий',typeL:'Тип',birthday:'День рождения',anniv:'Годовщина',other:'Другое',showAge:'Показывать возраст или годы (по году в дате)',note:'Заметка (кабинет, преподаватель, детали)',optional:'Необязательно',saveCh:'Сохранить',addEvent:'Добавить событие',addTask:'Добавить задачу',addDate:'Добавить дату',del:'Удалить',phEvent:'Математика, спортзал',phTask:'Эссе по истории',phDate:'День рождения Ани',phCity:'напр. Краков',enterTitle:'Введите название.',chooseCat:'Выберите категорию: учёба, личное или другое.',pickTime:'Укажите время начала.',pickDl:'Укажите срок.',pickDate:'Укажите дату.',endAfter:'Конец должен быть позже начала.',pickDay:'Выберите хотя бы один день.',delConfirm:'Удалить эту запись?',repeatsQ:'Это повторяющееся событие.',applyTo:'Применить изменения:',deleteQ:'Удалить:',onlyDay:'Только {d}',allOcc:'Все повторы',cancel:'Отмена',overdue:'Просрочено',due:'Срок',atT:'в {t}',taskDone:'Задача выполнена',undo:'Отменить',age:'Возраст: {n}',years:'Лет: {n}',week:'Неделя',month:'Месяц',prev:'Пред.',next:'След.',nothingPl:'Ничего не запланировано.',birthdays:'Дни рождения',language:'Язык',weatherLoc:'Место для погоды',city:'Город',useLoc:'Моё местоположение',features:'Функции',featuresD:'Включайте и отключайте дополнительные функции.',fWeather:'Уведомление о погоде',fWeatherD:'Утреннее уведомление с температурой, максимумом дня и временем дождя.',fEvening:'План на завтра',fEveningD:'В заданное время уведомление со всеми планами на завтра.',fAlarm:'Будильник для событий',fAlarmD:'Звонит будильник вместо уведомления о событии.',sendAt:'Время',test:'Проверка',notifOn:'Включить уведомления',stOn:'Уведомления включены. Держите приложение установленным, чтобы получать напоминания.',stDen:'Уведомления заблокированы. Разрешите их в настройках сайта в Chrome.',stUns:'Этот браузер не поддерживает уведомления.',stOff:'Уведомления выключены.',backup:'Резервная копия',dlB:'Скачать копию',sendB:'Отправить копию',restoreL:'Восстановить из файла копии (добавляется к имеющемуся)',lastB:'Последняя копия: {d}',noB:'Копия ещё не сохранена.',savedMsg:'Копия сохранена в папке «Загрузки»: {f}. Сохраните её ещё и на Диске или отправьте себе.',restored:'Восстановлено: событий {a}, задач {b}, дат {c}.',badFile:'Это не файл копии Daybook.',wxErr:'Не удалось загрузить погоду. Проверьте подключение.',cityNF:'Город не найден. Попробуйте другое написание.',cityErr:'Не удалось найти город.',geoErr:'Доступ к местоположению запрещён. Введите город.',alarmT:'Будильник',dismiss:'Отключить',snooze:'Отложить на 5 мин',nowHigh:'Сейчас {n}°C, максимум сегодня {h}°C.',rainExp:'Ожидается дождь: {r}.',noRainExp:'Дождя не ожидается.',wxUnavail:'Погода недоступна.',briefCnt:'Событий: {n}. Задач на сегодня: {m}.',tmrPlan:'План на завтра',nothingTom:'На завтра ничего не запланировано.',taskN:'Задача: {x}',dueTxt:'Срок: {d}, приоритет: {p}',startsAt:'Начало в {t}',nowAt:'Сейчас, {t}',until:'до {t}',todayP:'Сегодня: ',tomP:'Завтра: ',in7:'Через 7 дней: ',w0:'Ясно',w1:'Преимущественно ясно',w2:'Переменная облачность',w3:'Пасмурно',w45:'Туман',w51:'Морось',w61:'Небольшой дождь',w63:'Дождь',w65:'Сильный дождь',w71:'Небольшой снег',w73:'Снег',w75:'Сильный снег',w80:'Ливни',w82:'Сильные ливни',w95:'Гроза',wx:'Погода'},
+pl:{settings:'Ustawienia',backupT:'Zrób kopię zapasową',backupNow:'Zrób kopię teraz',backupNever:'Nie zapisano jeszcze kopii zapasowej.',backupDays:'Dni od ostatniej kopii: {n}',comingUp:'Wkrótce',tasks:'Zadania',calendar:'Kalendarz',add:'Dodaj',back:'Wstecz',nothingMore:'Na dziś nic więcej nie zaplanowano.',noTasks:'Brak otwartych zadań.',allDay:'Cały dzień',tomorrow:'jutro',today:'dzisiaj',inProg:'trwa',wxNone:'Pogoda nie jest ustawiona',wxHint:'Dodaj miasto w ustawieniach.',wxHL:'Maks. {h}°, min. {l}°',rainR:', deszcz {r}',noRainS:', bez deszczu',gm:'Dzień dobry',ga:'Dzień dobry',ge:'Dobry wieczór',addNew:'Nowy wpis',editEvent:'Edytuj wydarzenie',editTask:'Edytuj zadanie',editDate:'Edytuj datę',event:'Wydarzenie',task:'Zadanie',yearly:'Data coroczna',title:'Tytuł',category:'Kategoria',study:'Nauka',personal:'Osobiste',others:'Inne',repeats:'Powtarzanie',noRepeat:'Bez powtarzania',everyDay:'Codziennie',everyWeek:'Co tydzień',date:'Data',onDays:'W dni',starts:'Początek',endsOpt:'Koniec (opcjonalnie)',remindMe:'Przypomnij',atStart:'W chwili początku',minB:'{n} min przed',hourB:'1 godz. przed',dayB:'1 dzień przed',weekB:'1 tydzień przed',onDay:'W tym dniu, 09:00',noRem:'Bez przypomnienia',atDl:'W terminie',deadline:'Termin',timeOpt:'Godzina (opcjonalnie)',priority:'Priorytet',pHigh:'Wysoki',pMed:'Średni',pLow:'Niski',typeL:'Rodzaj',birthday:'Urodziny',anniv:'Rocznica',other:'Inne',showAge:'Pokaż wiek lub lata (na podstawie roku z daty)',note:'Notatka (sala, nauczyciel, szczegóły)',optional:'Opcjonalnie',saveCh:'Zapisz zmiany',addEvent:'Dodaj wydarzenie',addTask:'Dodaj zadanie',addDate:'Dodaj datę',del:'Usuń',phEvent:'Matematyka, siłownia',phTask:'Esej z historii',phDate:'Urodziny Ani',phCity:'np. Kraków',enterTitle:'Wpisz tytuł.',chooseCat:'Wybierz kategorię: nauka, osobiste lub inne.',pickTime:'Wybierz godzinę początku.',pickDl:'Wybierz termin.',pickDate:'Wybierz datę.',endAfter:'Koniec musi być po początku.',pickDay:'Wybierz co najmniej jeden dzień.',delConfirm:'Usunąć ten wpis?',repeatsQ:'To wydarzenie się powtarza.',applyTo:'Zastosuj zmiany do:',deleteQ:'Usuń:',onlyDay:'Tylko {d}',allOcc:'Wszystkich wystąpień',cancel:'Anuluj',overdue:'Po terminie',due:'Termin',atT:'o {t}',taskDone:'Zadanie wykonane',undo:'Cofnij',age:'Wiek: {n}',years:'Lat: {n}',week:'Tydzień',month:'Miesiąc',prev:'Wstecz',next:'Dalej',nothingPl:'Nic nie zaplanowano.',birthdays:'Urodziny',language:'Język',weatherLoc:'Lokalizacja pogody',city:'Miasto',useLoc:'Użyj mojej lokalizacji',features:'Funkcje',featuresD:'Włączaj i wyłączaj dodatkowe funkcje.',fWeather:'Powiadomienie o pogodzie',fWeatherD:'Poranne powiadomienie z temperaturą, maksimum dnia i godzinami deszczu.',fEvening:'Plan na jutro',fEveningD:'O wybranej godzinie powiadomienie ze wszystkim, co zaplanowano na jutro.',fAlarm:'Budzik dla wydarzeń',fAlarmD:'Zamiast powiadomienia dzwoni budzik przy przypomnieniu o wydarzeniu.',sendAt:'Godzina',test:'Test',notifOn:'Włącz powiadomienia',stOn:'Powiadomienia są włączone. Zostaw aplikację zainstalowaną, aby otrzymywać przypomnienia.',stDen:'Powiadomienia są zablokowane. Zezwól na nie w ustawieniach witryny w Chrome.',stUns:'Ta przeglądarka nie obsługuje powiadomień.',stOff:'Powiadomienia są wyłączone.',backup:'Kopia zapasowa',dlB:'Pobierz kopię',sendB:'Wyślij kopię',restoreL:'Przywróć z pliku kopii (dodaje do istniejących danych)',lastB:'Ostatnia kopia: {d}',noB:'Nie zapisano jeszcze kopii.',savedMsg:'Kopia zapisana w folderze Pobrane jako {f}. Zachowaj ją też na Dysku lub wyślij sobie.',restored:'Przywrócono: wydarzeń {a}, zadań {b}, dat {c}.',badFile:'To nie jest plik kopii Daybook.',wxErr:'Nie udało się pobrać pogody. Sprawdź połączenie.',cityNF:'Nie znaleziono miasta. Spróbuj innej pisowni.',cityErr:'Nie udało się wyszukać miasta.',geoErr:'Lokalizacja jest zablokowana. Wpisz miasto.',alarmT:'Budzik',dismiss:'Wyłącz',snooze:'Drzemka 5 min',nowHigh:'Teraz {n}°C, dziś maksymalnie {h}°C.',rainExp:'Spodziewany deszcz: {r}.',noRainExp:'Deszczu nie przewidziano.',wxUnavail:'Pogoda niedostępna.',briefCnt:'Wydarzeń: {n}. Zadań na dziś: {m}.',tmrPlan:'Plan na jutro',nothingTom:'Na jutro nic nie zaplanowano.',taskN:'Zadanie: {x}',dueTxt:'Termin: {d}, priorytet: {p}',startsAt:'Początek o {t}',nowAt:'Teraz, {t}',until:'do {t}',todayP:'Dzisiaj: ',tomP:'Jutro: ',in7:'Za 7 dni: ',w0:'Bezchmurnie',w1:'Przeważnie bezchmurnie',w2:'Częściowe zachmurzenie',w3:'Pochmurno',w45:'Mgła',w51:'Mżawka',w61:'Lekki deszcz',w63:'Deszcz',w65:'Silny deszcz',w71:'Lekki śnieg',w73:'Śnieg',w75:'Silny śnieg',w80:'Przelotne opady',w82:'Silne opady',w95:'Burza',wx:'Pogoda'},
+de:{settings:'Einstellungen',backupT:'Daten sichern',backupNow:'Jetzt sichern',backupNever:'Es wurde noch kein Backup gespeichert.',backupDays:'Tage seit dem letzten Backup: {n}',comingUp:'Demnächst',tasks:'Aufgaben',calendar:'Kalender',add:'Hinzufügen',back:'Zurück',nothingMore:'Für heute ist nichts mehr geplant.',noTasks:'Keine offenen Aufgaben.',allDay:'Ganztägig',tomorrow:'morgen',today:'heute',inProg:'läuft',wxNone:'Wetter nicht eingerichtet',wxHint:'Stadt in den Einstellungen eintragen.',wxHL:'Max. {h}°, min. {l}°',rainR:', Regen {r}',noRainS:', kein Regen',gm:'Guten Morgen',ga:'Guten Tag',ge:'Guten Abend',addNew:'Neuer Eintrag',editEvent:'Termin bearbeiten',editTask:'Aufgabe bearbeiten',editDate:'Datum bearbeiten',event:'Termin',task:'Aufgabe',yearly:'Jährliches Datum',title:'Titel',category:'Kategorie',study:'Studium',personal:'Privat',others:'Sonstiges',repeats:'Wiederholung',noRepeat:'Keine Wiederholung',everyDay:'Jeden Tag',everyWeek:'Jede Woche',date:'Datum',onDays:'An diesen Tagen',starts:'Beginn',endsOpt:'Ende (optional)',remindMe:'Erinnern',atStart:'Zum Beginn',minB:'{n} Min. vorher',hourB:'1 Std. vorher',dayB:'1 Tag vorher',weekB:'1 Woche vorher',onDay:'Am Tag selbst, 09:00',noRem:'Keine Erinnerung',atDl:'Zur Frist',deadline:'Frist',timeOpt:'Uhrzeit (optional)',priority:'Priorität',pHigh:'Hoch',pMed:'Mittel',pLow:'Niedrig',typeL:'Art',birthday:'Geburtstag',anniv:'Jahrestag',other:'Sonstiges',showAge:'Alter oder Jahre anzeigen (nach dem Jahr im Datum)',note:'Notiz (Raum, Lehrkraft, Details)',optional:'Optional',saveCh:'Änderungen speichern',addEvent:'Termin hinzufügen',addTask:'Aufgabe hinzufügen',addDate:'Datum hinzufügen',del:'Löschen',phEvent:'Mathe, Fitnessstudio',phTask:'Geschichts-Aufsatz',phDate:'Annas Geburtstag',phCity:'z. B. Krakau',enterTitle:'Bitte einen Titel eingeben.',chooseCat:'Kategorie wählen: Studium, Privat oder Sonstiges.',pickTime:'Startzeit wählen.',pickDl:'Frist wählen.',pickDate:'Datum wählen.',endAfter:'Das Ende muss nach dem Beginn liegen.',pickDay:'Mindestens einen Tag wählen.',delConfirm:'Diesen Eintrag löschen?',repeatsQ:'Dieser Termin wiederholt sich.',applyTo:'Änderungen anwenden auf:',deleteQ:'Löschen:',onlyDay:'Nur {d}',allOcc:'Alle Wiederholungen',cancel:'Abbrechen',overdue:'Überfällig',due:'Fällig',atT:'um {t}',taskDone:'Aufgabe erledigt',undo:'Rückgängig',age:'Alter: {n}',years:'Jahre: {n}',week:'Woche',month:'Monat',prev:'Zurück',next:'Weiter',nothingPl:'Nichts geplant.',birthdays:'Geburtstage',language:'Sprache',weatherLoc:'Wetter-Standort',city:'Stadt',useLoc:'Meinen Standort nutzen',features:'Funktionen',featuresD:'Zusatzfunktionen ein- oder ausschalten.',fWeather:'Wetter-Benachrichtigung',fWeatherD:'Morgendliche Nachricht mit Temperatur, Tageshöchstwert und Regenzeiten.',fEvening:'Plan für morgen',fEveningD:'Zur gewählten Uhrzeit eine Benachrichtigung mit allem, was morgen ansteht.',fAlarm:'Wecker für Termine',fAlarmD:'Ein Wecker klingelt statt einer Benachrichtigung bei Terminerinnerungen.',sendAt:'Uhrzeit',test:'Test',notifOn:'Benachrichtigungen aktivieren',stOn:'Benachrichtigungen sind aktiv. Lass die App installiert, damit Erinnerungen ankommen.',stDen:'Benachrichtigungen sind blockiert. Erlaube sie in den Chrome-Websiteeinstellungen.',stUns:'Dieser Browser unterstützt keine Benachrichtigungen.',stOff:'Benachrichtigungen sind aus.',backup:'Backup',dlB:'Backup herunterladen',sendB:'Backup senden',restoreL:'Aus Backup-Datei wiederherstellen (wird zu den vorhandenen Daten hinzugefügt)',lastB:'Letztes Backup: {d}',noB:'Noch kein Backup gespeichert.',savedMsg:'Backup im Ordner „Downloads“ gespeichert: {f}. Sichere es zusätzlich in Drive oder schicke es dir selbst.',restored:'Wiederhergestellt: {a} Termine, {b} Aufgaben, {c} Daten.',badFile:'Das ist keine Daybook-Backup-Datei.',wxErr:'Wetter konnte nicht geladen werden. Verbindung prüfen.',cityNF:'Stadt nicht gefunden. Versuche eine andere Schreibweise.',cityErr:'Stadt konnte nicht gesucht werden.',geoErr:'Standort wurde blockiert. Gib deine Stadt ein.',alarmT:'Wecker',dismiss:'Ausschalten',snooze:'5 Min. schlummern',nowHigh:'Jetzt {n}°C, heute maximal {h}°C.',rainExp:'Regen erwartet: {r}.',noRainExp:'Kein Regen erwartet.',wxUnavail:'Wetter nicht verfügbar.',briefCnt:'Termine: {n}. Aufgaben fällig: {m}.',tmrPlan:'Plan für morgen',nothingTom:'Für morgen ist nichts geplant.',taskN:'Aufgabe: {x}',dueTxt:'Fällig {d}, Priorität: {p}',startsAt:'Beginn um {t}',nowAt:'Jetzt, {t}',until:'bis {t}',todayP:'Heute: ',tomP:'Morgen: ',in7:'In 7 Tagen: ',w0:'Klar',w1:'Überwiegend klar',w2:'Teils bewölkt',w3:'Bedeckt',w45:'Nebel',w51:'Nieselregen',w61:'Leichter Regen',w63:'Regen',w65:'Starker Regen',w71:'Leichter Schneefall',w73:'Schneefall',w75:'Starker Schneefall',w80:'Regenschauer',w82:'Starke Schauer',w95:'Gewitter',wx:'Wetter'}
+};
+const t=(k,p)=>{let s=(T[cfg.lang]&&T[cfg.lang][k])??T.en[k]??k;if(p)for(const q in p)s=s.replace('{'+q+'}',p[q]);return s};
+const LEAD={lead:[[0,'atStart'],[5,'minB',5],[10,'minB',10],[15,'minB',15],[30,'minB',30],[60,'hourB'],[1440,'dayB']],tlead:[[-1,'noRem'],[0,'atDl'],[60,'hourB'],[1440,'dayB']],dlead:[[0,'onDay'],[1,'dayB'],[7,'weekB'],[-1,'noRem']]};
+function fillOpts(){for(const id in LEAD){const el=$('#'+id),v=el.value;el.innerHTML=LEAD[id].map(([val,k,n])=>`<option value="${val}">${t(k,{n})}</option>`).join('');if(v!=='')el.value=v}}
+function buildDays(){const c=new Set($$('#days input:checked').map(i=>i.value));$('#days').innerHTML=[1,2,3,4,5,6,0].map(d=>`<label><input type="checkbox" value="${d}" ${c.has(String(d))?'checked':''}><span>${dn(d)}</span></label>`).join('')}
+function applyLang(){
+  document.documentElement.lang=cfg.lang;
+  $$('[data-i]').forEach(e=>{e.textContent=t(e.dataset.i)});
+  $$('[data-ip]').forEach(e=>{e.placeholder=t(e.dataset.ip)});
+  buildDays();fillOpts();
+}
 
 /* ---------- helpers ---------- */
 function occursOn(e,d){
@@ -218,24 +251,24 @@ function occursOn(e,d){
 }
 const eff=(e,k)=>e.over&&e.over[k]?{...e,...e.over[k]}:e;
 const at=(d,hm)=>{const [h,m]=hm.split(':').map(Number);const t=new Date(d);t.setHours(h,m,0,0);return t};
-const dLabel=k=>new Date(k+'T00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-const ageTxt=(x,k)=>{if(!x.showAge||!x.year)return'';const n=+k.slice(0,4)-x.year;if(n<=0)return'';return x.label==='Birthday'?`turns ${n}`:`${n} years`};
-function fmtDue(t){
-  const d=new Date(t.due+'T00:00'),n=new Date();n.setHours(0,0,0,0);
+const dLabel=k=>new Date(k+'T00:00').toLocaleDateString(loc(),{weekday:'short',day:'numeric',month:'short'});
+const ageTxt=(x,k)=>{if(!x.showAge||!x.year)return'';const n=+k.slice(0,4)-x.year;if(n<=0)return'';return t(x.label==='Birthday'?'age':'years',{n})};
+function fmtDue(x){
+  const d=new Date(x.due+'T00:00'),n=new Date();n.setHours(0,0,0,0);
   const diff=Math.round((d-n)/864e5);
-  return (diff===0?'today':diff===1?'tomorrow':dLabel(t.due))+(t.time?' at '+t.time:'');
+  return (diff===0?t('today'):diff===1?t('tomorrow'):dLabel(x.due))+(x.time?' '+t('atT',{t:x.time}):'');
 }
 function rainText(h){
   if(!h||!h.length)return'';
   const f=n=>String(n%24).padStart(2,'0')+':00',r=[];let a=h[0],b=h[0];
   for(const x of h.slice(1)){if(x===b+1){b=x;continue}r.push([a,b]);a=b=x}
   r.push([a,b]);
-  return r.map(([x,y])=>f(x)+' to '+f(y+1)).join(', ');
+  return r.map(([x,y])=>f(x)+'–'+f(y+1)).join(', ');
 }
 function wxSummary(){
   if(!wx||wx.date!==ymd(new Date())||!wx.rainH)return '';
   const rt=rainText(wx.rainH);
-  return `Now ${Math.round(wx.now)}°C, high ${wx.max}°C today. `+(rt?`Rain expected ${rt}.`:'No rain expected.');
+  return t('nowHigh',{n:Math.round(wx.now),h:wx.max})+' '+(rt?t('rainExp',{r:rt}):t('noRainExp'));
 }
 function dayItems(d){
   const k=ymd(d),out=[];
@@ -246,72 +279,84 @@ function dayItems(d){
 }
 
 /* ---------- rows ---------- */
-function taskRow(t){
+function taskRow(x){
   const now=new Date(),today=ymd(now),hm=now.toTimeString().slice(0,5);
-  const late=!t.done&&(t.due<today||(t.due===today&&t.time&&t.time<hm));
-  return `<div class="ev t ${t.done?'done':''}">
-    <input class="ck" type="checkbox" aria-label="Done: ${esc(t.title)}" ${t.done?'checked':''} data-tdone="${t.id}">
-    <span><button class="lnk" data-edit="t:${t.id}">${esc(t.title)}</button><small><span class="pri p${t.pri}">${PRI[t.pri]}</span><span class="${late?'late':''}">${late?'Overdue, ':'Due '}${fmtDue(t)}</span>${t.note?', '+esc(t.note):''}</small></span></div>`;
+  const late=x.due<today||(x.due===today&&x.time&&x.time<hm);
+  return `<div class="ev t">
+    <input class="ck" type="checkbox" aria-label="${esc(x.title)}" data-tdone="${x.id}">
+    <span><button class="lnk" data-edit="t:${x.id}">${esc(x.title)}</button><small><span class="pri p${x.pri}">${PRI[x.pri]}</span><span class="${late?'late':''}">${late?t('overdue'):t('due')} ${fmtDue(x)}</span>${x.note?', '+esc(x.note):''}</small></span></div>`;
 }
 function itemRow(it,hm){
   const o=it.o,k=it.date;
   if(it.k==='t')return taskRow(o);
   if(it.k==='d'){const a=ageTxt(o,k);
-    return `<div class="ev c c-date"><span class="tm"><small>All day</small></span><span><button class="lnk" data-edit="d:${o.id}">${esc(o.title)}</button><small>${o.label}${a?', '+a:''}${o.note?', '+esc(o.note):''}</small></span></div>`}
-  const cat=o.cat||'other',live=hm&&o.end&&o.time<=hm&&o.end>hm;
-  return `<div class="ev c c-${cat}"><span class="tm">${o.time}${o.end?`<small>to ${o.end}</small>`:''}</span>
-    <span><button class="lnk" data-edit="e:${o.id}" data-date="${k}">${esc(o.title)}${live?'<span class="live">in progress</span>':''}</button><small>${CAT[cat]||'Others'}${o.note?', '+esc(o.note):''}</small></span></div>`;
+    return `<div class="ev c c-date"><span class="tm"><small>${t('allDay')}</small></span><span><button class="lnk" data-edit="d:${o.id}">${esc(o.title)}</button><small>${LBL[o.label]||o.label}${a?', '+a:''}${o.note?', '+esc(o.note):''}</small></span></div>`}
+  const cat=o.cat||'other',live=hm&&!it.tag&&o.end&&o.time<=hm&&o.end>hm;
+  const tg=live?`<span class="live">${t('inProg')}</span>`:it.tag?`<span class="live tmr">${t('tomorrow')}</span>`:'';
+  return `<div class="ev c c-${cat}"><span class="tm">${o.time}${o.end?`<small>${t('until',{t:o.end})}</small>`:''}</span>
+    <span><button class="lnk" data-edit="e:${o.id}" data-date="${k}">${esc(o.title)}${tg}</button><small>${CAT[cat]||CAT.other}${o.note?', '+esc(o.note):''}</small></span></div>`;
 }
 
 /* ---------- render ---------- */
 function renderMain(){
   const now=new Date(),h=now.getHours(),hm=now.toTimeString().slice(0,5);
-  $('#greet').textContent=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
-  $('#today').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  if(wx){$('#wxT').textContent=Math.round(wx.now)+'°';$('#wxD').textContent=WX[wx.code]||'Weather';
-    const rt=rainText(wx.rainH);
-    $('#wxS').textContent=`High ${wx.max}°, low ${wx.min}°`+(wx.rainH?(rt?`, rain ${rt}`:', no rain'):'')+(cfg.city?' in '+cfg.city:'')}
+  $('#greet').textContent=t(h<12?'gm':h<18?'ga':'ge');
+  $('#today').textContent=now.toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
+  if(wx){const rt=rainText(wx.rainH);
+    $('#wxT').textContent=Math.round(wx.now)+'°';$('#wxD').textContent=wxName(wx.code);
+    $('#wxS').textContent=t('wxHL',{h:wx.max,l:wx.min})+(wx.rainH?(rt?t('rainR',{r:rt}):t('noRainS')):'')+(cfg.city?', '+cfg.city:'')}
+  else{$('#wxD').textContent=t('wxNone');$('#wxS').textContent=t('wxHint')}
   const its=dayItems(now).filter(i=>i.k!=='t');
-  const list=[...its.filter(i=>i.k==='d'),...its.filter(i=>i.k==='e'&&(i.o.end?i.o.end>hm:i.t>hm)).slice(0,3)];
-  $('#todayList').innerHTML=list.length?list.map(i=>itemRow(i,hm)).join(''):'<p class="empty">Nothing more planned today.</p>';
-  const key=t=>t.due+(t.time||'99');
-  const open=tasks.filter(t=>!t.done).sort((a,b)=>key(a)<key(b)?-1:key(a)>key(b)?1:a.pri-b.pri);
-  $('#taskList').innerHTML=open.length?open.map(taskRow).join(''):'<p class="empty">No open tasks.</p>';
+  const evT=its.filter(i=>i.k==='e'&&(i.o.end?i.o.end>hm:i.t>hm)).slice(0,3);
+  let list=[...its.filter(i=>i.k==='d'),...evT];
+  if(!evT.length){const tm=new Date(now.getTime()+864e5);
+    list=[...list,...dayItems(tm).filter(i=>i.k==='e').slice(0,3).map(i=>({...i,tag:1}))]}
+  $('#todayList').innerHTML=list.length?list.map(i=>itemRow(i,hm)).join(''):`<p class="empty">${t('nothingMore')}</p>`;
+  const key=x=>x.due+(x.time||'99');
+  const open=tasks.filter(x=>!x.done).sort((a,b)=>key(a)<key(b)?-1:key(a)>key(b)?1:a.pri-b.pri);
+  $('#taskList').innerHTML=open.length?open.map(taskRow).join(''):`<p class="empty">${t('noTasks')}</p>`;
   const total=events.length+tasks.length+dates.length;
   const days=cfg.lastBackup?Math.floor((Date.now()-new Date(cfg.lastBackup))/864e5):null;
   $('#nudge').classList.toggle('hide',!(total>0&&(days===null||days>=14)));
-  $('#nudgeT').textContent=days===null?'You have not saved a backup yet.':`Your last backup was ${days} days ago.`;
+  $('#nudgeT').textContent=days===null?t('backupNever'):t('backupDays',{n:days});
 }
 function renderCal(){
-  const body=$('#calBody'),M=new Date(calRef);
+  const body=$('#calBody'),M=new Date(calRef),none=`<p class="empty">${t('nothingPl')}</p>`;
   if(calView==='week'){
     const s=new Date(M);s.setDate(s.getDate()-((s.getDay()+6)%7));
     const e=new Date(s);e.setDate(e.getDate()+6);
-    $('#calT').textContent=dLabel(ymd(s)).slice(4)+' to '+dLabel(ymd(e)).slice(4);
+    $('#calT').textContent=shortD(s)+' – '+shortD(e);
     let html='';
     for(let i=0;i<7;i++){const d=new Date(s);d.setDate(d.getDate()+i);const its=dayItems(d);
-      html+=`<section class="card"><h2>${d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</h2>${its.length?its.map(x=>itemRow(x,false)).join(''):'<p class="empty">Nothing planned.</p>'}</section>`}
+      html+=`<section class="card"><h2>${d.toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'short'})}</h2>${its.length?its.map(x=>itemRow(x,false)).join(''):none}</section>`}
     body.innerHTML=html;
   }else{
     M.setDate(1);
-    $('#calT').textContent=M.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+    $('#calT').textContent=M.toLocaleDateString(loc(),{month:'long',year:'numeric'});
     const lead=(M.getDay()+6)%7,n=new Date(M.getFullYear(),M.getMonth()+1,0).getDate(),today=ymd(new Date());
     if(calSel.slice(0,7)!==ymd(M).slice(0,7))calSel=ymd(M);
-    let g=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<b>${d}</b>`).join('')+'<span></span>'.repeat(lead);
+    let g=[1,2,3,4,5,6,0].map(d=>`<b>${dn(d)}</b>`).join('')+'<span></span>'.repeat(lead);
     for(let i=1;i<=n;i++){const d=new Date(M.getFullYear(),M.getMonth(),i),k=ymd(d),its=dayItems(d);
       const dots=[...new Set(its.map(x=>x.k==='e'?'d'+(x.o.cat||'other')[0]:x.k==='t'?'dt':'dd'))].map(c=>`<i class="${c}"></i>`).join('');
       g+=`<button class="cell ${k===calSel?'sel':''} ${k===today?'tod':''}" data-day="${k}" aria-label="${dLabel(k)}">${i}<span class="dots">${dots}</span></button>`}
     const its=dayItems(new Date(calSel+'T00:00'));
-    body.innerHTML=`<div class="grid">${g}</div><section class="card"><h2>${dLabel(calSel)}</h2>${its.length?its.map(x=>itemRow(x,false)).join(''):'<p class="empty">Nothing planned.</p>'}</section>`;
+    body.innerHTML=`<div class="grid">${g}</div><section class="card"><h2>${dLabel(calSel)}</h2>${its.length?its.map(x=>itemRow(x,false)).join(''):none}</section>`;
   }
 }
+const FEATURES=[{id:'weather',n:'fWeather',d:'fWeatherD',time:'brief'},{id:'evening',n:'fEvening',d:'fEveningD',time:'eveningAt'},{id:'alarm',n:'fAlarm',d:'fAlarmD',test:1}];
+function renderFeat(){
+  $('#featList').innerHTML=FEATURES.map(f=>{const on=cfg.feat[f.id];
+    return `<div class="feat"><label class="chk"><input type="checkbox" data-feat="${f.id}" ${on?'checked':''}><b>${t(f.n)}</b></label><small>${t(f.d)}</small>`
+    +(on&&f.time?`<div class="row" style="margin-top:8px"><div><label>${t('sendAt')}</label><input type="time" data-ftime="${f.time}" value="${cfg[f.time]}"></div><span></span></div>`:'')
+    +(on&&f.test?`<p style="margin:8px 0 0"><button class="sec" data-test="${f.id}">${t('test')}</button></p>`:'')+'</div>'}).join('');
+}
 function renderSet(){
-  $('#city').value=cfg.city||'';$('#brief').value=cfg.brief;
   const p='Notification' in window?Notification.permission:'unsupported';
-  $('#status').textContent=p==='granted'?'Notifications are on. Keep the app installed so reminders can arrive.':p==='denied'?'Notifications are blocked. Allow them in Chrome site settings.':p==='unsupported'?'This browser does not support notifications.':'Notifications are off.';
-  $('#lastB').textContent=cfg.lastBackup?'Last backup: '+new Date(cfg.lastBackup).toLocaleString('en-GB'):'No backup saved yet.';
+  $('#status').textContent=t(p==='granted'?'stOn':p==='denied'?'stDen':p==='unsupported'?'stUns':'stOff');
+  $('#lastB').textContent=cfg.lastBackup?t('lastB',{d:new Date(cfg.lastBackup).toLocaleString(loc())}):t('noB');
   try{$('#shr').classList.toggle('hide',!(navigator.canShare&&navigator.canShare({files:[backupFile()]})))}catch{}
 }
+function fillSet(){$('#city').value=cfg.city||'';$('#lang').value=cfg.lang;renderFeat();renderSet()}
 function render(){renderMain();if($('#pCal').classList.contains('on'))renderCal();if($('#pSet').classList.contains('on'))renderSet()}
 
 /* ---------- routing ---------- */
@@ -321,6 +366,7 @@ function route(){
   const id=PAGES[location.hash.slice(1)]||'pMain';
   $$('.page').forEach(p=>p.classList.toggle('on',p.id===id));
   if(id!=='pAdd')editing=null;else editing?fillForm():resetForm();
+  if(id==='pSet')fillSet();
   render();window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',route);
@@ -330,13 +376,13 @@ const curKind=()=>$('input[name=kind]:checked').value;
 function setKind(k){
   $(`input[name=kind][value=${k}]`).checked=true;
   $('#evBox').classList.toggle('hide',k!=='event');$('#taBox').classList.toggle('hide',k!=='task');$('#dtBox').classList.toggle('hide',k!=='date');
-  $('#title').placeholder={event:'Math class, gym',task:'History essay',date:'Anna’s birthday'}[k];
-  $('#save').textContent=editing?'Save changes':'Add '+{event:'event',task:'task',date:'yearly date'}[k];
+  $('#title').placeholder=t({event:'phEvent',task:'phTask',date:'phDate'}[k]);
+  $('#save').textContent=editing?t('saveCh'):t({event:'addEvent',task:'addTask',date:'addDate'}[k]);
 }
 function typeCh(){const t=$('#type').value;$('#dateBox').classList.toggle('hide',t!=='once');$('#dayBox').classList.toggle('hide',t!=='weekly')}
 function resetForm(){
   editing=null;const tm=new Date();tm.setDate(tm.getDate()+1);
-  $('#formH').textContent='Add new';$('#kind').classList.remove('hide');$('#del').classList.add('hide');$('#msg').textContent='';
+  $('#formH').textContent=t('addNew');$('#kind').classList.remove('hide');$('#del').classList.add('hide');$('#msg').textContent='';
   $('#title').value='';$('#note').value='';$('#type').value='once';$('#date').value=ymd(new Date());
   $('#time').value='08:00';$('#end').value='';$('#lead').value='15';$$('#days input').forEach(i=>i.checked=false);$$('input[name=cat]').forEach(i=>{i.checked=false});
   $('#tdue').value=ymd(tm);$('#ttime').value='';$('#pri').value='2';$('#tlead').value='60';
@@ -349,7 +395,7 @@ function fillForm(){
   if(!o){editing=null;resetForm();return}
   resetForm();editing=E;
   const e=kind==='event'&&E.date?eff(o,E.date):o;
-  $('#formH').textContent='Edit '+(kind==='date'?'yearly date':kind)+(kind==='event'&&o.type!=='once'&&E.date?' ('+dLabel(E.date)+')':'');
+  $('#formH').textContent=t(kind==='date'?'editDate':kind==='task'?'editTask':'editEvent')+(kind==='event'&&o.type!=='once'&&E.date?' ('+dLabel(E.date)+')':'');
   $('#kind').classList.add('hide');$('#del').classList.remove('hide');
   $('#title').value=e.title;$('#note').value=e.note||'';
   if(kind==='event'){
@@ -366,7 +412,7 @@ function fillForm(){
 }
 const msg=t=>{$('#msg').textContent=t};
 function askScope(verb,cb){
-  const d=$('#scope');$('#sVerb').textContent=verb;$('#sOne').textContent='Only '+dLabel(editing.date);
+  const d=$('#scope');$('#sVerb').textContent=verb;$('#sOne').textContent=t('onlyDay',{d:dLabel(editing.date)});
   const fin=v=>{d.close();if(v)cb(v)};
   $('#sOne').onclick=()=>fin('one');$('#sAll').onclick=()=>fin('all');$('#sNo').onclick=()=>fin(null);
   d.showModal();
@@ -374,30 +420,30 @@ function askScope(verb,cb){
 const finish=()=>{editing=null;saveAll();go('')};
 $('#kind').onchange=()=>setKind(curKind());
 $('#type').onchange=typeCh;
-$('#days').innerHTML=[1,2,3,4,5,6,0].map(d=>`<label><input type="checkbox" value="${d}"><span>${DN[d]}</span></label>`).join('');
+
 
 $('#save').onclick=()=>{
   const title=$('#title').value.trim(),kind=curKind(),note=$('#note').value.trim();
-  if(!title){msg('Enter a title.');$('#title').focus();return}
+  if(!title){msg(t('enterTitle'));$('#title').focus();return}
   if(kind==='task'){
-    const due=$('#tdue').value;if(!due){msg('Pick a deadline.');return}
-    const t={title,pri:+$('#pri').value,due,time:$('#ttime').value,lead:+$('#tlead').value,note};
-    if(editing)Object.assign(tasks.find(x=>x.id===editing.id),t);else tasks.push({id:Date.now().toString(36),done:false,...t});
+    const due=$('#tdue').value;if(!due){msg(t('pickDl'));return}
+    const tk={title,pri:+$('#pri').value,due,time:$('#ttime').value,lead:+$('#tlead').value,note};
+    if(editing)Object.assign(tasks.find(x=>x.id===editing.id),tk);else tasks.push({id:Date.now().toString(36),done:false,...tk});
     return finish();
   }
   if(kind==='date'){
-    const v=$('#ddate').value;if(!v){msg('Pick a date.');return}
+    const v=$('#ddate').value;if(!v){msg(t('pickDate'));return}
     const x={title,label:$('#dlabel').value,md:v.slice(5),year:+v.slice(0,4),showAge:$('#dAge').checked,lead:+$('#dlead').value,note};
     if(editing)Object.assign(dates.find(y=>y.id===editing.id),x);else dates.push({id:Date.now().toString(36),...x});
     return finish();
   }
-  const catEl=$('input[name=cat]:checked');if(!catEl){msg('Choose a category: Study, Personal or Others.');return}
+  const catEl=$('input[name=cat]:checked');if(!catEl){msg(t('chooseCat'));return}
   const time=$('#time').value,end=$('#end').value,type=$('#type').value;
-  if(!time){msg('Pick a start time.');return}
-  if(end&&end<=time){msg('The end time must be after the start time.');return}
+  if(!time){msg(t('pickTime'));return}
+  if(end&&end<=time){msg(t('endAfter'));return}
   const n={title,time,end,type,lead:+$('#lead').value,note,cat:catEl.value};
-  if(type==='once'){n.date=$('#date').value;if(!n.date){msg('Pick a date.');return}}
-  if(type==='weekly'){n.days=$$('#days input:checked').map(i=>+i.value);if(!n.days.length){msg('Pick at least one day.');return}}
+  if(type==='once'){n.date=$('#date').value;if(!n.date){msg(t('pickDate'));return}}
+  if(type==='weekly'){n.days=$$('#days input:checked').map(i=>+i.value);if(!n.days.length){msg(t('pickDay'));return}}
   if(!editing){events.push({id:Date.now().toString(36),done:{},...n});return finish()}
   const o=events.find(x=>x.id===editing.id);
   const apply=scope=>{
@@ -407,30 +453,35 @@ $('#save').onclick=()=>{
       if(type==='weekly')o.days=n.days;else delete o.days}
     finish();
   };
-  if(o.type!=='once'&&editing.date)askScope('Apply your changes to:',apply);else apply('all');
+  if(o.type!=='once'&&editing.date)askScope(t('applyTo'),apply);else apply('all');
 };
 $('#del').onclick=()=>{
   const E=editing;if(!E)return;
   const drop=()=>{if(E.kind==='event')events=events.filter(x=>x.id!==E.id);else if(E.kind==='task')tasks=tasks.filter(x=>x.id!==E.id);else dates=dates.filter(x=>x.id!==E.id);finish()};
   if(E.kind==='event'){
     const o=events.find(x=>x.id===E.id);
-    if(o.type!=='once'&&E.date){askScope('Delete:',v=>{if(v==='one'){o.over=o.over||{};o.over[E.date]={skip:true};finish()}else drop()});return}
+    if(o.type!=='once'&&E.date){askScope(t('deleteQ'),v=>{if(v==='one'){o.over=o.over||{};o.over[E.date]={skip:true};finish()}else drop()});return}
   }
-  if(confirm('Delete this item?'))drop();
+  if(confirm(t('delConfirm')))drop();
 };
 
 /* ---------- clicks ---------- */
 document.addEventListener('click',ev=>{
-  const b=ev.target.closest('[data-go],[data-edit],[data-tclear],[data-day]');if(!b)return;
+  const b=ev.target.closest('[data-go],[data-edit],[data-tclear],[data-day],[data-test]');if(!b)return;
   const d=b.dataset;
   if(d.go!==undefined)go(d.go);
   else if(d.edit){const [k,id]=d.edit.split(':');editing={kind:{e:'event',t:'task',d:'date'}[k],id,date:d.date||null};go('add')}
   else if(d.tclear!==undefined){tasks=tasks.filter(x=>!x.done);saveAll();render()}
   else if(d.day){calSel=d.day;renderCal()}
+  else if(d.test){unlockAudio();alarm({title:t('alarmT')},t('test'))}
 });
 document.addEventListener('change',ev=>{
   const d=ev.target.dataset||{};
   if(d.tdone)completeTask(d.tdone);
+  else if(d.feat){cfg.feat[d.feat]=ev.target.checked;
+    if(ev.target.checked){unlockAudio();if(d.feat!=='alarm'&&'Notification' in window&&Notification.permission==='default')Notification.requestPermission().then(renderSet)}
+    saveAll();renderFeat()}
+  else if(d.ftime){cfg[d.ftime]=ev.target.value||cfg[d.ftime];saveAll()}
 });
 $$('input[name=cv]').forEach(r=>r.onchange=()=>{calView=r.value;if(calView==='month')calSel=ymd(calRef);renderCal()});
 const step=n=>{if(calView==='week')calRef.setDate(calRef.getDate()+7*n);else{calRef.setDate(1);calRef.setMonth(calRef.getMonth()+n)}renderCal()};
@@ -447,13 +498,13 @@ function completeTask(id){
 $('#undo').onclick=()=>{if(lastTask){tasks.push(lastTask);lastTask=null;saveAll();render()}$('#toast').classList.add('hide')};
 
 /* ---------- backup ---------- */
-const backupObj=()=>({app:'daybook',version:3,exported:new Date().toISOString(),events,tasks,dates,settings:{city:cfg.city,lat:cfg.lat,lon:cfg.lon,brief:cfg.brief}});
+const backupObj=()=>({app:'daybook',version:3,exported:new Date().toISOString(),events,tasks,dates,settings:{city:cfg.city,lat:cfg.lat,lon:cfg.lon,brief:cfg.brief,eveningAt:cfg.eveningAt,lang:cfg.lang,feat:cfg.feat}});
 const backupFile=()=>new File([JSON.stringify(backupObj(),null,1)],`daybook-backup-${ymd(new Date())}.json`,{type:'application/json'});
 function marked(){cfg.lastBackup=new Date().toISOString();saveAll();render()}
 function download(){
   const f=backupFile(),a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);marked();
-  $('#smsg').textContent='Backup saved to your Downloads folder as '+f.name+'. Keep a copy in Drive or send it to yourself.';
+  $('#smsg').textContent=t('savedMsg',{f:f.name});
 }
 $('#exp').onclick=download;
 $('#nudgeBtn').onclick=download;
@@ -466,8 +517,8 @@ $('#imp').onchange=async ev=>{
     events=merge(events,j.events);tasks=merge(tasks,(j.tasks||[]).filter(t=>!t.done));dates=merge(dates,j.dates);
     if(j.settings&&cfg.lat==null&&!cfg.city)Object.assign(cfg,j.settings);
     saveAll();render();fetchWeather();
-    $('#smsg').textContent=`Restored: ${(j.events||[]).length} events, ${(j.tasks||[]).length} tasks, ${(j.dates||[]).length} yearly dates.`;
-  }catch{$('#smsg').textContent='That file is not a Daybook backup.'}
+    $('#smsg').textContent=t('restored',{a:(j.events||[]).length,b:(j.tasks||[]).length,c:(j.dates||[]).length});
+  }catch{$('#smsg').textContent=t('badFile')}
   ev.target.value='';
 };
 
@@ -480,62 +531,89 @@ async function fetchWeather(){
     j.hourly.time.forEach((t,i)=>{if((j.hourly.precipitation_probability[i]||0)>=50||(j.hourly.precipitation[i]||0)>=0.3)rainH.push(+t.slice(11,13))});
     wx={date:ymd(new Date()),now:j.current.temperature_2m,code:j.current.weather_code,max:Math.round(j.daily.temperature_2m_max[0]),min:Math.round(j.daily.temperature_2m_min[0]),rain:j.daily.precipitation_probability_max[0]||0,rainH};
     save('db_wx',wx);render();
-  }catch{$('#wxS').textContent='Could not load weather. Check your connection.'}
+  }catch{$('#wxS').textContent=t('wxErr')}
 }
 $('#city').addEventListener('change',async()=>{
   const name=$('#city').value.trim();if(!name)return;
   try{
     const j=await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1`)).json();
-    if(!j.results){$('#status').textContent='City not found. Try another spelling.';return}
+    if(!j.results){$('#status').textContent=t('cityNF');return}
     const r=j.results[0];cfg.city=r.name;cfg.lat=r.latitude;cfg.lon=r.longitude;saveAll();fetchWeather();render();
-  }catch{$('#status').textContent='Could not look up that city.'}
+  }catch{$('#status').textContent=t('cityErr')}
 });
 $('#geo').onclick=()=>navigator.geolocation&&navigator.geolocation.getCurrentPosition(p=>{
   cfg.lat=p.coords.latitude;cfg.lon=p.coords.longitude;cfg.city='';saveAll();fetchWeather();
-},()=>{$('#status').textContent='Location was blocked. Type your city instead.'});
-$('#brief').onchange=()=>{cfg.brief=$('#brief').value||'07:30';saveAll()};
+},()=>{$('#status').textContent=t('geoErr')});
+
 $('#notif').onclick=async()=>{if(!('Notification' in window))return;await Notification.requestPermission();render();tick()};
 
 /* ---------- notifications ---------- */
-async function notify(title,body){
-  try{if(swReg)await swReg.showNotification(title,{body,tag:title+body,icon:'icon-192.png',vibrate:[120,60,120]});else new Notification(title,{body})}
-  catch(e){try{new Notification(title,{body})}catch{}}
+const canNotify=()=>'Notification' in window&&Notification.permission==='granted';
+async function notify(title,body,opts={}){
+  if(!canNotify())return;
+  const o={body,tag:title+body,icon:'icon-192.png',vibrate:[120,60,120],...opts};
+  try{if(swReg)await swReg.showNotification(title,o);else new Notification(title,o)}
+  catch(e){try{new Notification(title,o)}catch{}}
 }
+let actx=null,ringT=null,curAl=null;
+function unlockAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume()}catch{}}
+['pointerdown','keydown'].forEach(n=>document.addEventListener(n,unlockAudio,{once:true}));
+function beep(f){if(!actx||actx.state!=='running')return;const o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.2)}
+function stopRing(){clearInterval(ringT);ringT=null;try{navigator.vibrate&&navigator.vibrate(0)}catch{}}
+function ring(){stopRing();let n=0;const c=()=>{beep(880);setTimeout(()=>beep(660),250);try{navigator.vibrate&&navigator.vibrate([400,150,400])}catch{}if(++n>40)stopRing()};c();ringT=setInterval(c,1500)}
+function alarm(e,body){
+  curAl={title:e.title,body};
+  notify(t('alarmT')+': '+e.title,body,{requireInteraction:true,vibrate:[600,200,600,200,600,200,600],renotify:true});
+  $('#alT').textContent=e.title;$('#alB').textContent=body;
+  const d=$('#alarm');if(!d.open)d.showModal();ring();
+}
+$('#alarm').addEventListener('close',stopRing);
+$('#alOff').onclick=()=>$('#alarm').close();
+$('#alSnz').onclick=()=>{$('#alarm').close();const a=curAl;setTimeout(()=>alarm({title:a.title},a.body),5*6e4)};
+$('#lang').onchange=()=>{cfg.lang=$('#lang').value;saveAll();applyLang();render();fillSet()};
 async function sendBrief(){
   await fetchWeather();
-  const its=dayItems(new Date()),n=its.filter(i=>i.k!=='t').length,tc=its.length-n;
-  notify('Good morning',(wxSummary()||'Weather unavailable.')+` ${n} on your schedule`+(tc?`, ${tc} task${tc===1?'':'s'} due`:'')+'.');
+  const its=dayItems(new Date()),n=its.filter(i=>i.k!=='t').length,m=its.length-n;
+  notify(t('gm'),(wxSummary()||t('wxUnavail'))+' '+t('briefCnt',{n,m}));
+}
+function sendEvening(){
+  const its=dayItems(new Date(Date.now()+864e5));
+  const ln=i=>i.k==='e'?`${i.o.time}${i.o.end?'–'+i.o.end:''} ${i.o.title}`:i.k==='d'?i.o.title:t('taskN',{x:i.o.title});
+  notify(t('tmrPlan'),its.length?its.map(ln).join('\n'):t('nothingTom'));
 }
 function tick(){
-  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const cn=canNotify();
+  if(!cn&&!cfg.feat.alarm)return;
   const now=new Date(),today=ymd(now),tom=new Date(now.getTime()+864e5);
   for(const k of Object.keys(fired))if(!k.startsWith(today))delete fired[k];
   for(const e0 of events){
     const onToday=occursOn(e0,now);
     if(!onToday&&!occursOn(e0,tom))continue;
-    const base=onToday?now:tom,bk=ymd(base),e=eff(e0,bk);
+    const base=onToday?now:tom,e=eff(e0,ymd(base));
     if(!onToday&&!(e.lead>=1440))continue;
-    const t=at(base,e.time).getTime(),fire=t-(e.lead||0)*6e4,key=today+'|'+e.id;
-    if(now>=fire&&now.getTime()<=t+10*6e4&&!fired[key]&&!(e.done||{})[bk]){
+    const st=at(base,e.time).getTime(),fire=st-(e.lead||0)*6e4,key=today+'|'+e.id;
+    if(now>=fire&&now.getTime()<=st+10*6e4&&!fired[key]){
       fired[key]=1;
-      notify(e.title,(e.lead?`Starts at ${e.time}`:`Now, ${e.time}`)+(e.end?` until ${e.end}`:'')+(e.note?'. '+e.note:''));
+      const body=(e.lead?t('startsAt',{t:e.time}):t('nowAt',{t:e.time}))+(e.end?' '+t('until',{t:e.end}):'')+(e.note?'. '+e.note:'');
+      if(cfg.feat.alarm)alarm(e,body);else notify(e.title,body);
     }
   }
-  for(const t of tasks){
-    if(t.done||t.lead<0||firedT[t.id])continue;
-    const due=at(new Date(t.due+'T00:00'),t.time||'09:00').getTime(),fire=due-t.lead*6e4;
-    if(now.getTime()>=fire&&now.getTime()<=due+6*36e5){firedT[t.id]=1;notify('Task: '+t.title,`Due ${fmtDue(t)}, ${PRI[t.pri].toLowerCase()} priority`+(t.note?'. '+t.note:''))}
-  }
-  for(const x of dates){
-    if(x.lead<0||now.getHours()<9)continue;
-    const occ=new Date(now.getFullYear(),now.getMonth(),now.getDate()+x.lead),ok=ymd(occ);
-    if(ok.slice(5)!==x.md||firedD[x.id+'|'+ok])continue;
-    firedD[x.id+'|'+ok]=1;const a=ageTxt(x,ok);
-    notify((x.lead===0?'Today: ':x.lead===1?'Tomorrow: ':'In 7 days: ')+x.title,(a?a+'. ':'')+(x.note||''));
-  }
-  const b=at(now,cfg.brief).getTime();
-  if(now>=b&&now.getTime()<=b+60*6e4&&!fired[today+'|brief']){
-    fired[today+'|brief']=1;sendBrief();
+  if(cn){
+    for(const tk of tasks){
+      if(tk.lead<0||firedT[tk.id])continue;
+      const due=at(new Date(tk.due+'T00:00'),tk.time||'09:00').getTime(),fire=due-tk.lead*6e4;
+      if(now.getTime()>=fire&&now.getTime()<=due+6*36e5){firedT[tk.id]=1;notify(t('taskN',{x:tk.title}),t('dueTxt',{d:fmtDue(tk),p:PRI[tk.pri]})+(tk.note?'. '+tk.note:''))}
+    }
+    for(const x of dates){
+      if(x.lead<0||now.getHours()<9)continue;
+      const occ=new Date(now.getFullYear(),now.getMonth(),now.getDate()+x.lead),ok=ymd(occ);
+      if(ok.slice(5)!==x.md||firedD[x.id+'|'+ok])continue;
+      firedD[x.id+'|'+ok]=1;const a=ageTxt(x,ok);
+      notify(t(x.lead===0?'todayP':x.lead===1?'tomP':'in7')+x.title,(a?a+'. ':'')+(x.note||''));
+    }
+    const win=hm=>{const b=at(now,hm).getTime();return now.getTime()>=b&&now.getTime()<=b+60*6e4};
+    if(cfg.feat.weather&&win(cfg.brief)&&!fired[today+'|brief']){fired[today+'|brief']=1;sendBrief()}
+    if(cfg.feat.evening&&win(cfg.eveningAt)&&!fired[today+'|eve']){fired[today+'|eve']=1;sendEvening()}
   }
   save('db_fired',fired);save('db_firedT',firedT);save('db_firedD',firedD);
 }
@@ -543,7 +621,7 @@ function tick(){
 /* ---------- start ---------- */
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(r=>{swReg=r}).catch(()=>{});
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
-route();fetchWeather();tick();
+applyLang();route();fetchWeather();tick();
 setInterval(tick,20000);setInterval(render,60000);setInterval(fetchWeather,30*60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();tick();fetchWeather()}});
 </script>
